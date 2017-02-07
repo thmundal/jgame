@@ -33,4 +33,8 @@ public class Vector2 {
     public Vector2 scale(float n) {
         return new Vector2(this.x * n, this.y * n);
     }
+    
+    public String toString() {
+        return "[" + x + ", " + y +"]";
+    }
 }

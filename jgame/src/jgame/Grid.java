@@ -53,6 +53,7 @@ public class Grid {
                 
                 cell.visited = true;
                 CellSet n = Neighbours((int) cell.coords.x, (int) cell.coords.y);
+                cell.neighbours = n.cell_list;
                 
                 if(n.top() != null && r) {
                     n.bottom().wall = false;
@@ -76,6 +77,7 @@ public class Grid {
         for(int x=0; x<grid_data.length; x++) {
             Cell cell = CellAt(x, y);
             CellSet n = Neighbours((int) cell.coords.x, (int) cell.coords.y);
+            cell.neighbours = n.cell_list;
             
             if(Game.random.nextBoolean()) {
                 // Go right
@@ -106,6 +108,7 @@ public class Grid {
             }
         }*/
         CellSet n = Neighbours((int) cell.coords.x, (int) cell.coords.y);
+        cell.neighbours = n.cell_list;
         
         int dir = Game.random.nextInt(4);
         Cell nextCell;
@@ -145,6 +148,10 @@ public class Grid {
         }
     }
     
+    public Cell CellAt(Vector2 coords) {
+        return CellAt((int) coords.x, (int) coords.y);
+    }
+    
     public Cell CellAt(int x, int y) {
         if(x < 0) {
             x = 0;
@@ -160,6 +167,11 @@ public class Grid {
             y = grid_data[0].length - 1;
         }
         return grid_data[x][y];
+    }
+    
+    
+    public Vector2 getCoords(Vector2 pixel_coords) {
+        return new Vector2(pixel_coords.x / cell_size.x, pixel_coords.y / cell_size.y);
     }
     
     public Cell RandomCell() {

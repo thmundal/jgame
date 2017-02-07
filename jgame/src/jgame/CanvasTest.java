@@ -28,7 +28,7 @@ public class CanvasTest {
         final float moveSpeed = 500.0f;
         
         final Vector2 gravity = new Vector2(0, 100);
-        grid = new Grid(game.height, game.width, 32, 32);
+        grid = new Grid(game.height(), game.width(), 32, 32);
         
         grid.CellAt(0, 0).color = Color.black;
         grid.RandomCell().color = Color.green;
@@ -60,7 +60,7 @@ public class CanvasTest {
         
         game.Draw(new DrawCallback() {
             public void run(Graphics g, float deltaTime) {
-                g.clearRect(0, 0, game.width, game.height);
+                g.clearRect(0, 0, game.width(), game.height());
                 grid.Draw(g);
                 
                 g.setColor(Color.red);

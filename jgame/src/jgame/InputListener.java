@@ -38,7 +38,7 @@ public class InputListener implements KeyListener, MouseListener, MouseMotionLis
     }
     
     public void mouseClicked(MouseEvent e) {
-        
+        game.mouseCallback().click(e);
     }
     
     public void mousePressed(MouseEvent e) {

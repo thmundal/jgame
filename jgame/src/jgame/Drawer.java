@@ -18,7 +18,9 @@ public class Drawer extends JPanel {
     
     public Drawer(String title, Game g) {
         game = g;
-        setSize(game.width, game.height);
+        
+        setSize(game.width(), game.height());
+        
         //setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         //setLocationRelativeTo(null);
         setVisible(true);
@@ -32,7 +34,7 @@ public class Drawer extends JPanel {
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
         if(drawCallback != null) {
-            drawCallback.run(g, game.deltaTime); // 0 -> deltaTime
+            drawCallback.run(g, game.deltaTime()); // 0 -> deltaTime
         } else {
             System.out.println("No drawcallback defined");
         }

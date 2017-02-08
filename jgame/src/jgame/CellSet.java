@@ -14,11 +14,11 @@ import java.util.List;
  */
 public class CellSet {
     public Cell[] cells;
-    public List<AStarNode> cell_list;
+    public List<AStarNodeInterface> cell_list;
     
     public CellSet(Cell[] c) {
         cells = c;
-        cell_list = new ArrayList<AStarNode>();
+        cell_list = new ArrayList<AStarNodeInterface>();
         
         for(Cell _c : c) {
             cell_list.add(_c);

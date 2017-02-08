@@ -20,24 +20,24 @@ public class AStar {
     private AStarNode end;
     private AStarNode start;
     
-    public AStar(AStarNode s, AStarNode e) {
-        start = s;
-        end = e;
+    public AStar(AStarNodeInterface s, AStarNodeInterface e) {
+        start = new AStarNode(new Vector2(s.x(), s.y()));
+        end = new AStarNode(new Vector2(e.x(), e.y()));
         
         openset = new ArrayList<AStarNode>();
         closedset = new ArrayList<AStarNode>();
     }
     
     public List<AStarNode> findPath() {
-        List<AStarNode> path = new ArrayList<AStarNode>();
         System.out.println("Start pathfinding");
+        List<AStarNode> path = new ArrayList<AStarNode>();
         openset.clear();
         closedset.clear();
         
         openset.add(start);
         
         while(!openset.isEmpty()) {
-             //System.out.println(openset.size());
+            //System.out.println(openset.size());
             // Find the node with lowest f in the openlist
             AStarNode q = null;
             for(AStarNode n : openset) {
@@ -63,7 +63,7 @@ public class AStar {
                     
                     // Make an actual path that we can traverse both ways
                     //try {
-                        AStarNode a = s;
+                        AStarNodeInterface a = s;
                         // path.add((AStarNode) a.clone());
 
                         while(a.parentNode() != null) {
@@ -89,10 +89,13 @@ public class AStar {
                 int closedindex = closedset.indexOf(s);
 
                 if(openindex > -1 && openset.get(openindex).g() <= s.f()) {
+                    System.out.println("Skip");
                     continue;
                 } else if(closedindex > -1 && closedset.get(closedindex).g() <= s.f()) {
+                    System.out.println("Skip");
                     continue;
                 } else {
+                    System.out.println("Adding");
                     openset.add(s);
                 }
                 
@@ -113,12 +116,12 @@ public class AStar {
         return openset;
     }
     
-    public float heuristic(AStarNode a) {
+    public float heuristic(AStarNodeInterface a) {
         // The distance between the two points
         return (float) Math.sqrt(Math.pow(end.x() - a.x(), 2) + Math.pow(end.y() - a.y(), 2));
     }
     
-    public float distance(AStarNode a, AStarNode b) {
+    public float distance(AStarNodeInterface a, AStarNodeInterface b) {
         return (float) Math.sqrt(Math.pow(b.x() - a.x(), 2) + Math.pow(b.y() - a.y(), 2));
     }
 }

@@ -21,10 +21,10 @@ public class GameProject {
     public static int y;
     public static Cell startCell;
     public static Cell goalCell;
-    public static List<AStarNode> path;
+    public static List<AStarNodeInterface> path;
     public static AStar a;
     public static Vector2 player_pos;
-    public static AStarNode currentCell;
+    public static AStarNodeInterface currentCell;
     
     public static void main(String[] args) {
         System.out.println("Test");
@@ -42,7 +42,7 @@ public class GameProject {
         }
         startCell.color = Color.RED;
         
-        path = new ArrayList<AStarNode>();
+        path = new ArrayList<AStarNodeInterface>();
         
         x = 0;
         y = 10;
@@ -61,7 +61,7 @@ public class GameProject {
                 }
                 
                 if(goalCell != null) {
-                    AStarNode nextCell = currentCell.next();
+                    AStarNodeInterface nextCell = currentCell.next();
                     
                     if(nextCell != null) {
                         if(player_pos.x == nextCell.transform().position.x &&
@@ -88,7 +88,7 @@ public class GameProject {
                 g.drawString("this is a test", x, y);
                 
                 if(a != null) {
-                    AStarNode n = startCell;
+                    AStarNodeInterface n = startCell;
                     int i = 0;
                     while(n.next() != null) {
                         // System.out.println("Draw path");

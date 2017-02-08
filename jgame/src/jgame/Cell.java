@@ -12,18 +12,18 @@ import java.util.List;
 /**
  *
  */
-public class Cell implements AStarNode, Cloneable {
+public class Cell implements AStarNodeInterface, Cloneable {
     public Transform transform;
     public Vector2 size;
     public Color color;
     public boolean wall;
     public boolean visited;
     public Vector2 coords;
-    public List<AStarNode> neighbours;
+    public List<AStarNodeInterface> neighbours;
     private float h;
     private float g;
-    private AStarNode _parent;
-    private AStarNode _next;
+    private AStarNodeInterface _parent;
+    private AStarNodeInterface _next;
     
     public Cell(Vector2 s, Vector2 p, Color c) {
         size = s;
@@ -51,7 +51,7 @@ public class Cell implements AStarNode, Cloneable {
     }
 
     @Override
-    public List<AStarNode> getSuccessors() {
+    public List<AStarNodeInterface> getSuccessors() {
         return neighbours;
     }
 
@@ -104,12 +104,12 @@ public class Cell implements AStarNode, Cloneable {
     }
 
     @Override
-    public AStarNode parentNode() {
+    public AStarNodeInterface parentNode() {
         return _parent;
     }
 
     @Override
-    public void setParent(AStarNode p) {
+    public void setParent(AStarNodeInterface p) {
         _parent = p;
     }
 
@@ -123,17 +123,17 @@ public class Cell implements AStarNode, Cloneable {
     }
 
     @Override
-    public void setNext(AStarNode p) {
+    public void setNext(AStarNodeInterface p) {
         _next = p;
     }
 
     @Override
-    public AStarNode next() {
+    public AStarNodeInterface next() {
         return _next;
     }
 
     @Override
-    public AStarNode previous() {
+    public AStarNodeInterface previous() {
         return _parent;
     }
     

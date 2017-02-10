@@ -25,11 +25,11 @@ public class AStarNode implements AStarNodeInterface {
     private Transform transform;
     private Cell cell;
     public static Grid grid = null;
-    public static Hashtable<Vector2, AStarNode> nodelist = new Hashtable<Vector2, AStarNode>();
+    public static Hashtable<String, AStarNode> nodelist = new Hashtable<String, AStarNode>();
     
     public AStarNode(Vector2 _coords) {
         coords = _coords;
-        AStarNode.nodelist.put(coords, this);
+        AStarNode.nodelist.put(coords.toString(), this);
     }
 
     public static void setGrid(Grid g) {
@@ -41,20 +41,20 @@ public class AStarNode implements AStarNodeInterface {
     }
     
     public Cell Cell() {
-        return cell;
+        return grid.CellAt(coords);
     }
     
     // Maybe create a function called setNodeList() That sets a list of nodes from the grid?
     public static AStarNode nodeAt(Vector2 _coords) {
-        AStarNode n = AStarNode.nodelist.get(_coords);
+        AStarNode n = AStarNode.nodelist.get(_coords.toString());
         
         if(n == null && AStarNode.grid != null) {
             Cell c = AStarNode.grid.CellAt(_coords);
             
             if(c != null) {
                 n = new AStarNode(_coords);
-                n.setCell(c);
-                AStarNode.nodelist.put(_coords, n);
+                //n.setCell(c);
+                AStarNode.nodelist.put(_coords.toString(), n);
                 
                 System.out.println("Create new node at " + _coords);
                 System.out.println(AStarNode.nodelist.size());
@@ -69,12 +69,7 @@ public class AStarNode implements AStarNodeInterface {
         
         for(float _y = coords.y - 1; _y <= coords.y+1; _y++) {
             for(float _x = coords.x - 1; _x <= coords.x+1; _x++) {
-                // This has to find a reference to an existing node at these coords
-                // Not make a new instance
-                //n.add(new AStarNode(new Vector2(_x, _y))); 
-                n.add(AStarNode.nodeAt(new Vector2(_x, _y))); // This is always null for first element
-                
-                // Have to search for a list of T (Cells)
+                n.add(AStarNode.nodeAt(new Vector2(_x, _y)));
             }
         }
         return n;
@@ -102,6 +97,9 @@ public class AStarNode implements AStarNodeInterface {
 
     @Override
     public void setg(float _g) {
+        if(Cell().wall) {
+            _g += 10;
+        }
         g = _g;
     }
 

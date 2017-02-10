@@ -67,6 +67,9 @@ public class Cell implements AStarNodeInterface, Cloneable {
 
     @Override
     public float g() {
+        if(wall) {
+            return g + 10;
+        }
         return g;
     }
 

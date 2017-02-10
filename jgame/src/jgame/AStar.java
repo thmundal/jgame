@@ -51,17 +51,12 @@ public class AStar {
             
             openset.remove(q);
             
-            q.setColor(java.awt.Color.LIGHT_GRAY);
+            q.Cell().color = java.awt.Color.LIGHT_GRAY;
             
             List<AStarNode> successors = q.getSuccessors();
             
             for(AStarNode s : successors) {
                 if(s == q || s == null) {
-                    if(s == null)
-                        System.out.println("s == null");
-                    else
-                        System.out.println("s is something");
-                    
                     continue;
                 }
                 
@@ -72,24 +67,19 @@ public class AStar {
                     
                     
                     // Make an actual path that we can traverse both ways
-                    //try {
-                        AStarNode a = s;
-                        // path.add((AStarNode) a.clone());
+                    AStarNode a = s;
 
-                        while(a.parentNode() != null) {
-                            path.addLast(a);
-                            System.out.println("Set next");
-                            // path.add((AStarNode) ((Cell) a).clone());
-                            a.parentNode().setNext(a);
-                            a = a.parentNode();
-                        }
+                    while(a.parentNode() != null) {
+                        path.addLast(a);
+                        System.out.println("Set next");
+                        a.parentNode().setNext(a);
+                        a = a.parentNode();
+                    }
 
-                        // Clean up
-                        
-                        System.out.println("End pathfinding");
-                    //} catch(CloneNotSupportedException ex) {
-                        
-                    //}
+                    path.addLast(end);
+                    
+                    // Clean up
+                    System.out.println("End pathfinding");
                     System.out.println("Return the path");
                     return path;
                 }

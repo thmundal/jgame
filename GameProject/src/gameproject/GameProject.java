@@ -24,7 +24,7 @@ public class GameProject {
     public static Cell goalCell;
     public static AStar a;
     public static Vector2 player_pos;
-    public static AStarNodeInterface currentCell;
+    public static AStarNode currentNode;
     
     public static LinkedList<AStarNode> path;
     
@@ -55,44 +55,53 @@ public class GameProject {
         player_pos = new Vector2(startCell.transform.position.x, startCell.transform.position.y);
         float speed = 0.5f;
         
-        currentCell = null;
+        currentNode = null;
         game.Update(new UpdateCallback() {
             public void run(Game g, float deltaTime) {
-                if(x < game.width() - 10)
-                    x++;
-                
-                if(g.isKeyDown("h")) {
+                if(g.isKeyDown("q")) {
                     g.exit();
                 }
                 
                 if(path != null && !path.isEmpty()) {
                     System.out.println("Got a path");
-                    if(currentCell == null) {
-                        currentCell = path.getFirst();
+                    if(currentNode == null) {
+                        currentNode = path.getFirst();
+                        System.out.println("First cell is " + currentNode.Cell());
                     }
                     
-                    AStarNode nextCell = (AStarNode) currentCell.next();
+                    AStarNode nextNode = (AStarNode) currentNode.next();
                     
-                    if(nextCell != null) {
-                        System.out.println("Found next cell..");
-                        if(player_pos.x == nextCell.Cell().transform.position.x &&
-                           player_pos.y == nextCell.Cell().transform.position.y) {
+                    System.out.println("Path size is " + path.size());
+                    
+                    if(nextNode != null) {
+                        Cell nextCell = nextNode.Cell();
+                    
+                        if(nextCell == null) {
+                            System.out.println("Next cell is null");
+                            return;
+                        }
+                        
+                        System.out.println("Found next node and its cell..");
+                        
+                        if(player_pos.x == nextCell.transform.position.x &&
+                           player_pos.y == nextCell.transform.position.y) {
                             // currentCell.reset();
-                            currentCell = nextCell;
-                            System.out.println("Going to next cell");
+                            currentNode = nextNode;
+                            System.out.println("Going to next node");
                         } else {
                             System.out.println("Moving...");
-                            Vector2 moveVector = new Vector2(nextCell.transform().position.x - player_pos.x, nextCell.transform().position.y - player_pos.y);
+                            Vector2 moveVector = new Vector2(nextCell.transform.position.x - player_pos.x, nextCell.transform.position.y - player_pos.y);
                             player_pos = player_pos.add(moveVector.scale(speed));
                         }
                     } else {
                         System.out.println("Reached goal, resetting");
-                        path = null;
-                        /*
+                        path.clear();
                         startCell = goalCell;
-                        player_pos = startCell.transform().position;
+                        player_pos = startCell.transform.position;
                         goalCell = null;
-                        a = null;*/
+                        currentNode = null;
+                        
+                        a = null;
                     }
                 }
             }
@@ -102,14 +111,11 @@ public class GameProject {
             public void run(Graphics g, float deltaTime) {
                 
                 if(a != null && path != null) {
-                    /*System.out.println("Draw path");
-                    AStarNodeInterface n = path.getFirst();
-
-                    while(n.next() != null) {
-                        // System.out.println("Draw path");
-                        n.next().setColor(Color.red);
-                        n = n.next();
-                    }*/
+                    System.out.println("Draw path");
+                    
+                    for(AStarNode n : path) {
+                        n.Cell().setColor(Color.red);
+                    }
                 }
                 
                 grid.Draw(g);
@@ -134,25 +140,22 @@ public class GameProject {
                 
                 Vector2 mousepos = new Vector2(x, y);
                 
-                if(goalCell == null) {
-                    Cell clickedOn = grid.CellAt(grid.getCoords(mousepos));
-                    
-                    if(clickedOn != startCell && a == null) {
-                        System.out.println("Start thread");
-                        clickedOn.color = Color.GREEN;
-                        goalCell = clickedOn;
-                        
-                        new Thread() {
-                            public void run() {
-                                // Start the pathfinding here from startcell to goalcell
-                                a = new AStar(startCell, goalCell);
-                                path = a.findPath();
-                                this.stop();
-                            }
-                        }.start();
-                    }
+                Cell clickedOn = grid.CellAt(grid.getCoords(mousepos));
+
+                if(clickedOn != startCell && a == null) {
+                    System.out.println("Start thread");
+                    clickedOn.color = Color.GREEN;
+                    goalCell = clickedOn;
+                    path.clear();
+
+                    new Thread() {
+                        public void run() {
+                            // Start the pathfinding here from startcell to goalcell
+                            a = new AStar(startCell, goalCell);
+                            path = a.findPath();
+                        }
+                    }.start();
                 }
-                
             }
         });
         

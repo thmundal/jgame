@@ -6,6 +6,7 @@
 package jgame;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import javafx.scene.paint.Color;
 
@@ -28,13 +29,15 @@ public class AStar {
         closedset = new ArrayList<AStarNode>();
     }
     
-    public List<AStarNode> findPath() {
+    public LinkedList<AStarNode> findPath() {
         System.out.println("Start pathfinding");
-        List<AStarNode> path = new ArrayList<AStarNode>();
+        LinkedList<AStarNode> path = new LinkedList<AStarNode>();
+        
         openset.clear();
         closedset.clear();
         
         openset.add(start);
+        path.addFirst(start);
         
         while(!openset.isEmpty()) {
             //System.out.println(openset.size());
@@ -53,20 +56,29 @@ public class AStar {
             List<AStarNode> successors = q.getSuccessors();
             
             for(AStarNode s : successors) {
-                if(s == q) {
+                if(s == q || s == null) {
+                    if(s == null)
+                        System.out.println("s == null");
+                    else
+                        System.out.println("s is something");
+                    
                     continue;
                 }
                 
                 if(s == end) {
+                    System.out.println("Set parent for last element");
+                    System.out.println(q);
                     s.setParent(q);
                     
                     
                     // Make an actual path that we can traverse both ways
                     //try {
-                        AStarNodeInterface a = s;
+                        AStarNode a = s;
                         // path.add((AStarNode) a.clone());
 
                         while(a.parentNode() != null) {
+                            path.addLast(a);
+                            System.out.println("Set next");
                             // path.add((AStarNode) ((Cell) a).clone());
                             a.parentNode().setNext(a);
                             a = a.parentNode();
@@ -78,6 +90,7 @@ public class AStar {
                     //} catch(CloneNotSupportedException ex) {
                         
                     //}
+                    System.out.println("Return the path");
                     return path;
                 }
                 
@@ -87,15 +100,16 @@ public class AStar {
                 
                 int openindex = openset.indexOf(s);
                 int closedindex = closedset.indexOf(s);
-
+                //System.out.println(openindex);
+                //System.out.println(closedindex);
                 if(openindex > -1 && openset.get(openindex).g() <= s.f()) {
-                    System.out.println("Skip");
+                    // System.out.println("Skip");
                     continue;
                 } else if(closedindex > -1 && closedset.get(closedindex).g() <= s.f()) {
-                    System.out.println("Skip");
+                    // System.out.println("Skip");
                     continue;
                 } else {
-                    System.out.println("Adding");
+                    // System.out.println("Adding");
                     openset.add(s);
                 }
                 
@@ -104,7 +118,7 @@ public class AStar {
             
             closedset.add(q);
         }
-        System.out.println("End pathfinding");
+        System.out.println("End pathfinding, end of function");
         return path;
     }
     

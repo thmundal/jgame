@@ -14,7 +14,7 @@ import java.util.List;
  * @author thmun
  */
 public interface AStarNodeInterface {
-    public List<AStarNodeInterface> getSuccessors();
+    public List<AStarNode> getSuccessors();
     public float h();
     public float f();
     public float g();
@@ -28,14 +28,14 @@ public interface AStarNodeInterface {
     public void setx(int _x);
     public void sety(int _y);
     
-    public AStarNodeInterface parentNode();
-    public void setParent(AStarNodeInterface p);
+    public AStarNode parentNode();
+    public void setParent(AStarNode p);
     
     public void setColor(Color c);
-    public void setNext(AStarNodeInterface p);
+    public void setNext(AStarNode p);
     
-    public AStarNodeInterface next();
-    public AStarNodeInterface previous();
+    public AStarNode next();
+    public AStarNode previous();
     
     public Transform transform();
     

@@ -9,6 +9,7 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import jgame.*;
 
@@ -21,16 +22,20 @@ public class GameProject {
     public static int y;
     public static Cell startCell;
     public static Cell goalCell;
-    public static List<AStarNodeInterface> path;
     public static AStar a;
     public static Vector2 player_pos;
     public static AStarNodeInterface currentCell;
+    
+    public static LinkedList<AStarNode> path;
     
     public static void main(String[] args) {
         System.out.println("Test");
         
         Game game = new Game(500,500);
         Grid grid = new Grid(game.width(), game.height(), 20, 20);
+        
+        // Implement A* function to run from grid... makes sense
+        AStarNode.setGrid(grid);
         
         startCell = grid.RandomCell();
         goalCell = null;
@@ -42,7 +47,7 @@ public class GameProject {
         }
         startCell.color = Color.RED;
         
-        path = new ArrayList<AStarNodeInterface>();
+        path = new LinkedList<AStarNode>();
         
         x = 0;
         y = 10;
@@ -50,7 +55,7 @@ public class GameProject {
         player_pos = new Vector2(startCell.transform.position.x, startCell.transform.position.y);
         float speed = 0.5f;
         
-        currentCell = startCell;
+        currentCell = null;
         game.Update(new UpdateCallback() {
             public void run(Game g, float deltaTime) {
                 if(x < game.width() - 10)
@@ -60,20 +65,30 @@ public class GameProject {
                     g.exit();
                 }
                 
-                if(goalCell != null) {
-                    AStarNodeInterface nextCell = currentCell.next();
+                if(path != null && !path.isEmpty()) {
+                    System.out.println("Got a path");
+                    if(currentCell == null) {
+                        currentCell = path.getFirst();
+                    }
+                    
+                    AStarNode nextCell = (AStarNode) currentCell.next();
                     
                     if(nextCell != null) {
-                        if(player_pos.x == nextCell.transform().position.x &&
-                           player_pos.y == nextCell.transform().position.y) {
+                        System.out.println("Found next cell..");
+                        if(player_pos.x == nextCell.Cell().transform.position.x &&
+                           player_pos.y == nextCell.Cell().transform.position.y) {
                             // currentCell.reset();
                             currentCell = nextCell;
+                            System.out.println("Going to next cell");
                         } else {
+                            System.out.println("Moving...");
                             Vector2 moveVector = new Vector2(nextCell.transform().position.x - player_pos.x, nextCell.transform().position.y - player_pos.y);
                             player_pos = player_pos.add(moveVector.scale(speed));
                         }
                     } else {
-                        /*System.out.println("Reached goal, resetting");
+                        System.out.println("Reached goal, resetting");
+                        path = null;
+                        /*
                         startCell = goalCell;
                         player_pos = startCell.transform().position;
                         goalCell = null;
@@ -85,19 +100,20 @@ public class GameProject {
         
         game.Draw(new DrawCallback() {
             public void run(Graphics g, float deltaTime) {
-                g.drawString("this is a test", x, y);
                 
-                if(a != null) {
-                    AStarNodeInterface n = startCell;
-                    int i = 0;
+                if(a != null && path != null) {
+                    /*System.out.println("Draw path");
+                    AStarNodeInterface n = path.getFirst();
+
                     while(n.next() != null) {
                         // System.out.println("Draw path");
                         n.next().setColor(Color.red);
                         n = n.next();
-                    }
+                    }*/
                 }
                 
                 grid.Draw(g);
+                // g.drawString("this is a test", x, y);
                 
                 Color c = g.getColor();
                 g.setColor(Color.BLUE);
@@ -130,7 +146,7 @@ public class GameProject {
                             public void run() {
                                 // Start the pathfinding here from startcell to goalcell
                                 a = new AStar(startCell, goalCell);
-                                a.findPath();
+                                path = a.findPath();
                                 this.stop();
                             }
                         }.start();

@@ -14,44 +14,67 @@ import java.util.List;
  *
  * @author Thomas
  */
-public class AStarNode<T> implements AStarNodeInterface {
+public class AStarNode implements AStarNodeInterface {
+
     private Vector2 coords;
     private float h;
     private float g;
-    private AStarNodeInterface _parent;
+    private AStarNode _parent;
     private Color color;
-    private AStarNodeInterface next;
+    private AStarNode next;
     private Transform transform;
-    private T cell;
-    public static Hashtable<Vector2, AStarNode> nodelist;
+    private Cell cell;
+    public static Grid grid = null;
+    public static Hashtable<Vector2, AStarNode> nodelist = new Hashtable<Vector2, AStarNode>();
     
     public AStarNode(Vector2 _coords) {
         coords = _coords;
-        nodelist.put(coords, this);
+        AStarNode.nodelist.put(coords, this);
+    }
+
+    public static void setGrid(Grid g) {
+        AStarNode.grid = g;
     }
     
-    public void setCell(T c) {
+    public void setCell(Cell c) {
         cell = c;
     }
     
-    public T Cell() {
+    public Cell Cell() {
         return cell;
     }
     
+    // Maybe create a function called setNodeList() That sets a list of nodes from the grid?
     public static AStarNode nodeAt(Vector2 _coords) {
-        return nodelist.get(_coords);
+        AStarNode n = AStarNode.nodelist.get(_coords);
+        
+        if(n == null && AStarNode.grid != null) {
+            Cell c = AStarNode.grid.CellAt(_coords);
+            
+            if(c != null) {
+                n = new AStarNode(_coords);
+                n.setCell(c);
+                AStarNode.nodelist.put(_coords, n);
+                
+                System.out.println("Create new node at " + _coords);
+                System.out.println(AStarNode.nodelist.size());
+            }
+        }
+        return n;
     }
     
     @Override
-    public List<AStarNodeInterface> getSuccessors() {
-        List<AStarNodeInterface> n = new ArrayList<AStarNodeInterface>();
+    public List<AStarNode> getSuccessors() {
+        List<AStarNode> n = new ArrayList<AStarNode>();
         
         for(float _y = coords.y - 1; _y <= coords.y+1; _y++) {
             for(float _x = coords.x - 1; _x <= coords.x+1; _x++) {
                 // This has to find a reference to an existing node at these coords
                 // Not make a new instance
                 //n.add(new AStarNode(new Vector2(_x, _y))); 
-                n.add(AStarNode.nodeAt(new Vector2(_x, _y)));
+                n.add(AStarNode.nodeAt(new Vector2(_x, _y))); // This is always null for first element
+                
+                // Have to search for a list of T (Cells)
             }
         }
         return n;
@@ -103,12 +126,12 @@ public class AStarNode<T> implements AStarNodeInterface {
     }
 
     @Override
-    public AStarNodeInterface parentNode() {
+    public AStarNode parentNode() {
         return _parent;
     }
 
     @Override
-    public void setParent(AStarNodeInterface p) {
+    public void setParent(AStarNode p) {
         _parent = p;
     }
 
@@ -118,17 +141,17 @@ public class AStarNode<T> implements AStarNodeInterface {
     }
 
     @Override
-    public void setNext(AStarNodeInterface p) {
+    public void setNext(AStarNode p) {
         next = p;
     }
 
     @Override
-    public AStarNodeInterface next() {
+    public AStarNode next() {
         return next;
     }
 
     @Override
-    public AStarNodeInterface previous() {
+    public AStarNode previous() {
         return _parent;
     }
 

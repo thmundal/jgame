@@ -14,15 +14,15 @@ import java.util.List;
  */
 public class CellSet {
     public Cell[] cells;
-    public List<AStarNodeInterface> cell_list;
+    public List<AStarNode> cell_list;
     
     public CellSet(Cell[] c) {
         cells = c;
-        cell_list = new ArrayList<AStarNodeInterface>();
+        cell_list = new ArrayList<AStarNode>();
         
-        for(Cell _c : c) {
+        /*for(Cell _c : c) {
             cell_list.add(_c);
-        }
+        }*/
     }
     
     public Cell topLeft() {

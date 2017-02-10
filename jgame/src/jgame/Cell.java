@@ -19,11 +19,11 @@ public class Cell implements AStarNodeInterface, Cloneable {
     public boolean wall;
     public boolean visited;
     public Vector2 coords;
-    public List<AStarNodeInterface> neighbours;
+    public List<AStarNode> neighbours;
     private float h;
     private float g;
-    private AStarNodeInterface _parent;
-    private AStarNodeInterface _next;
+    private AStarNode _parent;
+    private AStarNode _next;
     
     public Cell(Vector2 s, Vector2 p, Color c) {
         size = s;
@@ -51,7 +51,7 @@ public class Cell implements AStarNodeInterface, Cloneable {
     }
 
     @Override
-    public List<AStarNodeInterface> getSuccessors() {
+    public List<AStarNode> getSuccessors() {
         return neighbours;
     }
 
@@ -104,12 +104,12 @@ public class Cell implements AStarNodeInterface, Cloneable {
     }
 
     @Override
-    public AStarNodeInterface parentNode() {
+    public AStarNode parentNode() {
         return _parent;
     }
 
     @Override
-    public void setParent(AStarNodeInterface p) {
+    public void setParent(AStarNode p) {
         _parent = p;
     }
 
@@ -123,17 +123,17 @@ public class Cell implements AStarNodeInterface, Cloneable {
     }
 
     @Override
-    public void setNext(AStarNodeInterface p) {
+    public void setNext(AStarNode p) {
         _next = p;
     }
 
     @Override
-    public AStarNodeInterface next() {
+    public AStarNode next() {
         return _next;
     }
 
     @Override
-    public AStarNodeInterface previous() {
+    public AStarNode previous() {
         return _parent;
     }
     

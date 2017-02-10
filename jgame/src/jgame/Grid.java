@@ -8,6 +8,7 @@ package jgame;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.util.ArrayList;
+import java.util.Hashtable;
 import java.util.Random;
 
 /**
@@ -19,6 +20,7 @@ public class Grid {
     private Vector2 size;
     private Vector2 cell_size;
     private Cell[][] grid_data;
+    private Hashtable<Vector2, Cell> hash_data;
     
     public Grid() {
         
@@ -27,6 +29,7 @@ public class Grid {
     public Grid(int width, int height, int cell_width, int cell_height) {
         size = new Vector2(width, height);
         cell_size = new Vector2(cell_width, cell_height);
+        hash_data = new Hashtable<Vector2, Cell>();
         
         MakeGridData();
         //GenerateMaze();
@@ -40,8 +43,13 @@ public class Grid {
         for(int x=0; x < (int) (size.x / cell_size.x); x++) {
             for(int y=0; y < (int) (size.y / cell_size.y); y++) {
                 grid_data[x][y] = new Cell(new Vector2((int) cell_size.x, (int) cell_size.y), new Vector2(x * (int) cell_size.x, y * (int) cell_size.y), Color.white);
+                hash_data.put(grid_data[x][y].coords, grid_data[x][y]);
             }
         }
+    }
+    
+    public Hashtable<Vector2, Cell> hashData() {
+        return hash_data;
     }
     
     public boolean GenerateMaze() {

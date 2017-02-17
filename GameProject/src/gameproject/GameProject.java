@@ -85,7 +85,7 @@ public class GameProject {
                         
                         if(player_pos.x == nextCell.transform.position.x &&
                            player_pos.y == nextCell.transform.position.y) {
-                            // currentCell.reset();
+                            
                             currentNode = nextNode;
                             System.out.println("Going to next node");
                         } else {
@@ -109,16 +109,20 @@ public class GameProject {
         
         game.Draw(new DrawCallback() {
             public void run(Graphics g, float deltaTime) {
+                grid.Draw(g);
                 
                 if(a != null && path != null) {
                     System.out.println("Draw path");
                     
                     for(AStarNode n : path) {
                         n.Cell().setColor(Color.red);
+                        Color c = g.getColor();
+                        g.setColor(Color.BLUE);
+                        g.drawString(java.lang.Float.toString(n.f()), (int) n.Cell().transform.position.x, (int) n.Cell().transform.position.y);
+                        g.setColor(c);
                     }
                 }
                 
-                grid.Draw(g);
                 // g.drawString("this is a test", x, y);
                 
                 Color c = g.getColor();

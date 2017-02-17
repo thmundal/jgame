@@ -205,22 +205,32 @@ public class Game {
                         }
                     }
 
-                    // Throttle frame time based on FPS
-                    double remainingFrameTime = (last_time - System.nanoTime()) / 1000000000 + timePerFrame;
-                    // System.out.println(remainingFrameTime);
-                    if(remainingFrameTime > 0) {
-                        long millis = (long) (remainingFrameTime * 1000);
-                        int nanos = (int) (remainingFrameTime * 1000 - millis) * 1000000;
-                        // System.out.println(millis + "\t" + nanos);
-                        try {
-                            Thread.sleep(millis, nanos);
-                        } catch (InterruptedException ex) {
+                    if(frameRate > 0) {
+                        // Throttle frame time based on FPS
+                        double remainingFrameTime = (last_time - System.nanoTime()) / 1000000000 + timePerFrame;
+                        // System.out.println(remainingFrameTime);
+                        if(remainingFrameTime > 0) {
+                            long millis = (long) (remainingFrameTime * 1000);
+                            int nanos = (int) (remainingFrameTime * 1000 - millis) * 1000000;
+                            // System.out.println(millis + "\t" + nanos);
+                            try {
+                                Thread.sleep(millis, nanos);
+                            } catch (InterruptedException ex) {
+                            }
                         }
                     }
                 } 
             }
         };
         updateThread.start();
+    }
+    
+    public void setFrameRate(float fps) {
+        frameRate = fps;
+    }
+    
+    public float frameRate() {
+        return frameRate;
     }
 }
 

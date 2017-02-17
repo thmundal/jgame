@@ -67,11 +67,19 @@ public class AStarNode implements AStarNodeInterface {
     public List<AStarNode> getSuccessors() {
         List<AStarNode> n = new ArrayList<AStarNode>();
         
+        // all 8 neighbours
+        /*
         for(float _y = coords.y - 1; _y <= coords.y+1; _y++) {
             for(float _x = coords.x - 1; _x <= coords.x+1; _x++) {
                 n.add(AStarNode.nodeAt(new Vector2(_x, _y)));
             }
-        }
+        }*/
+        
+        // Only 4 neighbours
+        n.add(AStarNode.nodeAt(new Vector2(coords.x - 1, coords.y)));
+        n.add(AStarNode.nodeAt(new Vector2(coords.x + 1, coords.y)));
+        n.add(AStarNode.nodeAt(new Vector2(coords.x, coords.y - 1)));
+        n.add(AStarNode.nodeAt(new Vector2(coords.x, coords.y + 1)));
         return n;
     }
 
@@ -160,7 +168,7 @@ public class AStarNode implements AStarNodeInterface {
 
     @Override
     public void reset() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        AStarNode.nodelist.clear();
     }
     
 }

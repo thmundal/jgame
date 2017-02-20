@@ -12,9 +12,7 @@ import java.awt.Graphics;
  * @author Thomas
  */
 
-public class DrawCallback implements Callback {
-    public void run(Object o) {}
-    public void run(Graphics g, float d) {}
-    public void run(Game g, float d) {}
-    public void run(float d) {}
+@FunctionalInterface
+public interface DrawCallback {
+    public void run(Graphics g, float deltaTime);
 }

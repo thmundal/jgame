@@ -11,10 +11,8 @@ import java.awt.Graphics;
  *
  * @author Thomas
  */
-public class UpdateCallback implements Callback {
-    public void run(Graphics g, float d) {}
-    public void run(Game g, float d) {}
-    public void run(Object o) {}
-    public void run(float d) {}
+@FunctionalInterface
+public interface UpdateCallback {
+    public void run(Game g, float deltaTime);
 }
 

@@ -13,7 +13,7 @@ import java.awt.*;
  * @author Thomas
  */
 public class Drawer extends JPanel {
-    private Callback drawCallback;
+    private DrawCallback drawCallback;
     public Game game;
     
     public Drawer(String title, Game g) {
@@ -26,7 +26,7 @@ public class Drawer extends JPanel {
         setVisible(true);
     }
     
-    public void onDraw(Callback c) {
+    public void onDraw(DrawCallback c) {
         System.out.println("Drwcallback received");
         drawCallback = c;
     }
@@ -34,7 +34,7 @@ public class Drawer extends JPanel {
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
         if(drawCallback != null) {
-            drawCallback.run(g, game.deltaTime()); // 0 -> deltaTime
+            drawCallback.run((Graphics) g, new Float(game.deltaTime())); // 0 -> deltaTime
         } else {
             System.out.println("No drawcallback defined");
         }

@@ -37,7 +37,7 @@ public class Game {
     private List keys_down;
     private boolean state;
     private Drawer frame;
-    private Callback updateCallback;
+    private UpdateCallback updateCallback;
     private long last_time = System.nanoTime();
     private String window_title;
     private boolean pause;
@@ -151,12 +151,12 @@ public class Game {
         mouseCallback = cb;
     }
     
-    public void Update(Callback c) {
+    public void Update(UpdateCallback c) {
         //c.run(this);
         updateCallback = c;
     }
     
-    public void Draw(Callback c) {
+    public void Draw(DrawCallback c) {
         System.out.println("Setting drawcallback");
         frame.onDraw(c);
     }
@@ -188,7 +188,7 @@ public class Game {
 
                     if(!pause) {
                         if(updateCallback != null) {
-                            updateCallback.run(g, deltaTime);
+                            updateCallback.run(g, new Float(deltaTime));
                         } else {
                             System.out.println("No update callback defined");
                             state = false;

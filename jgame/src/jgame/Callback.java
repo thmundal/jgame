@@ -10,9 +10,10 @@ import java.awt.Graphics;
  *
  * @author Thomas
  */
+@FunctionalInterface
 public interface Callback {
-    void run(Object a);
-    void run(Graphics g, float d);
-    void run(Game g, float d);
-    void run(float d);
+    void run(Object a, Object b);
+    //void run(Graphics g, float d);
+    //void run(Game g, float d);
+    //void run(float d);
 }

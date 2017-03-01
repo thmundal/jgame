@@ -12,12 +12,17 @@ import java.awt.Graphics;
  * @author Thomas
  */
 public class Vector2 {
-    public float x;
-    public float y;
+    public int x;
+    public int y;
     
-    public Vector2(float _x, float _y) {
+    public Vector2(int _x, int _y) {
         x = _x;
         y = _y;
+    }
+    
+    public Vector2(float angle, float length) {
+        x = (int) (length * Math.cos(angle));
+        y = (int) (length * Math.sin(angle));
     }
     
     public Vector2 add(Vector2 vec) {
@@ -57,6 +62,10 @@ public class Vector2 {
     public void draw(Graphics g) {
         g.fillArc((int) x, (int) y, 5, 5, 0, 360);
         g.drawLine((int) x, (int) y, (int) (x * length()), (int) (y * length()));
+    }
+    
+    public Vector2 toUnitVector() {
+        return scale(1 / length());
     }
     
     public String toString() {

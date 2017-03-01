@@ -25,7 +25,7 @@ public class CanvasTest {
     
     public static void main(String[] args) {
         final Game game = new Game(800, 600);
-        final float moveSpeed = 500.0f;
+        final int moveSpeed = 500;
         
         final Vector2 gravity = new Vector2(0, 100);
         grid = new Grid(game.height(), game.width(), 32, 32);

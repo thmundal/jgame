@@ -123,12 +123,12 @@ public class AStarNode implements AStarNodeInterface {
 
     @Override
     public void setx(int x) {
-        coords.x = (float) x;
+        coords.x = x;
     }
 
     @Override
     public void sety(int y) {
-        coords.y = (float) y;
+        coords.y = y;
     }
 
     @Override

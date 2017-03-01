@@ -14,4 +14,5 @@ import java.awt.event.MouseEvent;
 public class MouseCallback {
     public void click(MouseEvent e) {}
     public void release(MouseEvent e) {}
+    public void move(MouseEvent e) {}
 }

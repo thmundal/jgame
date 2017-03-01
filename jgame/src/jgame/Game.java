@@ -5,6 +5,7 @@
  */
 package jgame;
 
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Toolkit;
 import javax.swing.JFrame;
@@ -14,7 +15,7 @@ import java.util.ArrayList;
 import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
+import javax.swing.JComponent;
 /**
  *
  * @author Thomas
@@ -231,6 +232,10 @@ public class Game {
     
     public float frameRate() {
         return frameRate;
+    }
+    
+    public Component addComponent(JComponent c) {
+        return frame.add(c);
     }
 }
 

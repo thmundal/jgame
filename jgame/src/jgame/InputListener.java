@@ -38,7 +38,8 @@ public class InputListener implements KeyListener, MouseListener, MouseMotionLis
     }
     
     public void mouseClicked(MouseEvent e) {
-        game.mouseCallback().click(e);
+        if(game.mouseCallback() != null)
+            game.mouseCallback().click(e);
     }
     
     public void mousePressed(MouseEvent e) {
@@ -62,6 +63,7 @@ public class InputListener implements KeyListener, MouseListener, MouseMotionLis
     }
     
     public void mouseMoved(MouseEvent e) {
-        
+        if(game.mouseCallback() != null)
+            game.mouseCallback().move(e);
     }
 }

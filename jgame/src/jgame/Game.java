@@ -48,6 +48,7 @@ public class Game {
     private InputListener input;
     private MouseCallback mouseCallback;
     private Thread updateThread;
+    private JFrame window;
     
     // Getters and setters
     public int width() {
@@ -99,7 +100,7 @@ public class Game {
     }
     
     public void initSwing() {
-        JFrame window = new JFrame(window_title);
+        window = new JFrame(window_title);
         window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         
         frame = new Drawer("Testing key input", this);
@@ -234,8 +235,8 @@ public class Game {
         return frameRate;
     }
     
-    public Component addComponent(JComponent c) {
-        return frame.add(c);
+    public void addComponent(JComponent c) {
+        frame.add(c);
     }
 }
 

@@ -20,6 +20,7 @@ public class Drawer extends JPanel {
         game = g;
         
         setSize(game.width(), game.height());
+        setLayout(null);
         
         //setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         //setLocationRelativeTo(null);

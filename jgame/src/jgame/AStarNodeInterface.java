@@ -22,11 +22,11 @@ public interface AStarNodeInterface {
     public void seth(float _h);
     public void setg(float _g);
     
-    public int x();
-    public int y();
+    public float x();
+    public float y();
     
-    public void setx(int _x);
-    public void sety(int _y);
+    public void setx(float _x);
+    public void sety(float _y);
     
     public AStarNode parentNode();
     public void setParent(AStarNode p);

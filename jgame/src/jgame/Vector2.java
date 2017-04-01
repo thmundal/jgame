@@ -12,18 +12,26 @@ import java.awt.Graphics;
  * @author Thomas
  */
 public class Vector2 {
-    public int x;
-    public int y;
+    public float x = 0;
+    public float y = 0;
     
-    public Vector2(int _x, int _y) {
-        x = _x;
-        y = _y;
+    public Vector2(float _x, float _y) {
+        this.x = _x;
+        this.y = _y;
     }
     
-    public Vector2(float angle, float length) {
+    
+    public static Vector2 fromAngle(float angle, float length) {
+        float x = (float) (length * Math.cos(angle));
+        float y = (float) (length * Math.sin(angle));
+        
+        return new Vector2(x, y);
+    }
+    
+/*    public Vector2(float angle, float length) {
         x = (int) (length * Math.cos(angle));
         y = (int) (length * Math.sin(angle));
-    }
+    }*/
     
     public Vector2 add(Vector2 vec) {
         return new Vector2(this.x + vec.x, this.y + vec.y);
@@ -38,7 +46,7 @@ public class Vector2 {
     }
     
     public Vector2 scale(float n) {
-        return new Vector2(this.x * n, this.y * n);
+        return new Vector2((this.x * n), (this.y * n));
     }
     
     public float length() {

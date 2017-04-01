@@ -27,8 +27,8 @@ public class Grid {
     }
     
     public Grid(int width, int height, int cell_width, int cell_height) {
-        size = new Vector2(width, height);
-        cell_size = new Vector2(cell_width, cell_height);
+        size = new Vector2((float) width, (float) height);
+        cell_size = new Vector2((float) cell_width, (float) cell_height);
         hash_data = new Hashtable<Vector2, Cell>();
         
         MakeGridData();
@@ -42,7 +42,7 @@ public class Grid {
         
         for(int x=0; x < (int) (size.x / cell_size.x); x++) {
             for(int y=0; y < (int) (size.y / cell_size.y); y++) {
-                grid_data[x][y] = new Cell(new Vector2((int) cell_size.x, (int) cell_size.y), new Vector2(x * (int) cell_size.x, y * (int) cell_size.y), Color.white);
+                grid_data[x][y] = new Cell(new Vector2(cell_size.x, cell_size.y), new Vector2(x * cell_size.x, y * cell_size.y), Color.white);
                 hash_data.put(grid_data[x][y].coords, grid_data[x][y]);
             }
         }
@@ -148,10 +148,30 @@ public class Grid {
         return true;
     }
 
+    private Sprite[] groundSprites;
+    public void setGroundSprite(Sprite s) {
+        groundSprites = new Sprite[1];
+        groundSprites[0] = s;
+    }
+    
+    public void setGroundSprite(Sprite[] s) {
+        groundSprites = s;
+    }
+    
+    private Sprite[] wallSprites;
+    public void setWallSprite(Sprite s) {
+        wallSprites = new Sprite[1];
+        wallSprites[0] = s;
+    }
+    
+    public void setWallSprite(Sprite[] s) {
+        wallSprites = s;
+    }
+    
     public void Draw(Graphics g) {
         for(int x=0; x < (int) (size.x / cell_size.x); x++) {
             for(int y=0; y < (int) (size.y / cell_size.y); y++) {
-                grid_data[x][y].Draw(g);
+                grid_data[x][y].Draw(g, groundSprites, wallSprites);
             }
         }
     }
@@ -179,7 +199,7 @@ public class Grid {
     
     
     public Vector2 getCoords(Vector2 pixel_coords) {
-        return new Vector2(pixel_coords.x / cell_size.x, pixel_coords.y / cell_size.y);
+        return new Vector2(Math.round(pixel_coords.x / cell_size.x), Math.round(pixel_coords.y / cell_size.y));
     }
     
     public Cell RandomCell() {

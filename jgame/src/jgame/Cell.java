@@ -8,6 +8,7 @@ package jgame;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.util.List;
+import java.util.Random;
 
 /**
  *
@@ -25,7 +26,12 @@ public class Cell implements AStarNodeInterface, Cloneable {
     private AStarNode _parent;
     private AStarNode _next;
     
+    private int wallSprite;
+    private int groundSprite;
+    
     public Cell(Vector2 s, Vector2 p, Color c) {
+        wallSprite = -1;
+        groundSprite = -1;
         size = s;
         color = c;
         transform = new Transform();
@@ -41,13 +47,38 @@ public class Cell implements AStarNodeInterface, Cloneable {
         _next = null;
     }
     
-    public void Draw(Graphics g) {
-        if(wall) {
-            g.setColor(Color.black);
-        } else {
+    public void Draw(Graphics g, Sprite[] groundSprites, Sprite[] wallSprites) {
+        Random rand = new Random();
+        
+        if(groundSprites == null) {
             g.setColor(color);
+            g.fillRect((int) transform.position.x, (int) transform.position.y, (int) size.x, (int) size.y);
+        } else {
+            if(groundSprite == -1)
+                groundSprite = rand.nextInt(groundSprites.length);
+            
+            groundSprites[groundSprite].SetPosition(transform.position);
+            groundSprites[groundSprite].SetSize(size);
+            groundSprites[groundSprite].Draw(g);
         }
-        g.fillRect((int) transform.position.x, (int) transform.position.y, (int) size.x, (int) size.y);
+        
+        if(wall) {
+            if(wallSprites != null) {
+                if(wallSprite == -1)
+                    wallSprite = rand.nextInt(wallSprites.length);
+                
+                wallSprites[wallSprite].SetPosition(transform.position);
+                wallSprites[wallSprite].SetSize(size);
+                wallSprites[wallSprite].Draw(g);
+            } else {
+                g.setColor(Color.black);
+                g.fillRect((int) transform.position.x, (int) transform.position.y, (int) size.x, (int) size.y);
+            }
+        }
+    }
+    
+    public void Draw(Graphics g) {
+        Draw(g, null, null);
     }
 
     @Override
@@ -87,22 +118,22 @@ public class Cell implements AStarNodeInterface, Cloneable {
     }
 
     @Override
-    public int x() {
-        return (int) coords.x;
+    public float x() {
+        return coords.x;
     }
 
     @Override
-    public int y() {
-        return (int) coords.y;
+    public float y() {
+        return coords.y;
     }
 
     @Override
-    public void setx(int x) {
+    public void setx(float x) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public void sety(int y) {
+    public void sety(float y) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 

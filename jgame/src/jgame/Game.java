@@ -5,16 +5,12 @@
  */
 package jgame;
 
-import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Toolkit;
 import javax.swing.JFrame;
-import javax.swing.JPanel;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Random;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.JComponent;
 /**
  *
@@ -25,7 +21,8 @@ public class Game {
      * PUBLIC VARIABLES
      */
     public static Random seed = new Random();
-    public static Random random = new Random(seed.nextLong());
+    public long seedValue = seed.nextLong();
+    public static Random random;
     
     /**
      * PRIVATE VARIABLES
@@ -97,6 +94,16 @@ public class Game {
         window_title = "jGame Alpha 1.0";
         pause = false;
         state = true;
+        random = new Random(seedValue);
+    }
+    
+    public long getSeed() {
+        return seedValue;
+    }
+    
+    public void setSeed(long s) {
+        seedValue = s;
+        random = new Random(seedValue);
     }
     
     public void initSwing() {
@@ -104,6 +111,7 @@ public class Game {
         window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         
         frame = new Drawer("Testing key input", this);
+        
         input = new InputListener();
         input.setGame(this);
         
@@ -199,8 +207,9 @@ public class Game {
                     }
 
                     if(wait) {
+                        wait = false;
                         try {
-                            Thread.sleep(wait_seconds * 1000);
+                            this.sleep(wait_seconds * 1000);
                             wait = false;
                         } catch(InterruptedException e) {
                             System.out.println("Wait failed");

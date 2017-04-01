@@ -55,9 +55,6 @@ public class AStarNode implements AStarNodeInterface {
                 n = new AStarNode(_coords);
                 //n.setCell(c);
                 AStarNode.nodelist.put(_coords.toString(), n);
-                
-                System.out.println("Create new node at " + _coords);
-                System.out.println(AStarNode.nodelist.size());
             }
         }
         return n;
@@ -112,22 +109,22 @@ public class AStarNode implements AStarNodeInterface {
     }
 
     @Override
-    public int x() {
-        return (int) coords.x;
+    public float x() {
+        return coords.x;
     }
 
     @Override
-    public int y() {
-        return (int) coords.y;
+    public float y() {
+        return coords.y;
     }
 
     @Override
-    public void setx(int x) {
+    public void setx(float x) {
         coords.x = x;
     }
 
     @Override
-    public void sety(int y) {
+    public void sety(float y) {
         coords.y = y;
     }
 

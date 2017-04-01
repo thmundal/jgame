@@ -30,7 +30,6 @@ public class AStar {
     }
     
     public LinkedList<AStarNode> findPath() {
-        System.out.println("Start pathfinding");
         LinkedList<AStarNode> path = new LinkedList<AStarNode>();
         
         openset.clear();
@@ -51,7 +50,7 @@ public class AStar {
             
             openset.remove(q);
             
-            q.Cell().color = java.awt.Color.LIGHT_GRAY;
+            // q.Cell().color = java.awt.Color.LIGHT_GRAY;
             
             List<AStarNode> successors = q.getSuccessors();
             
@@ -61,8 +60,6 @@ public class AStar {
                 }
                 
                 if(s == end) {
-                    System.out.println("Set parent for last element");
-                    System.out.println(q);
                     s.setParent(q);
                     
                     
@@ -71,7 +68,6 @@ public class AStar {
 
                     while(a.parentNode() != null) {
                         path.addLast(a);
-                        System.out.println("Set next");
                         a.parentNode().setNext(a);
                         a = a.parentNode();
                     }
@@ -79,8 +75,6 @@ public class AStar {
                     path.addLast(end);
                     
                     // Clean up
-                    System.out.println("End pathfinding");
-                    System.out.println("Return the path");
                     return path;
                 }
                 

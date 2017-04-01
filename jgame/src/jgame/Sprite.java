@@ -19,8 +19,9 @@ import javax.imageio.ImageIO;
  */
 public class Sprite {
     private boolean loaded = false;
-    BufferedImage image;
+    private BufferedImage image;
     private Vector2 position;
+    private Vector2 size;
     
     public Sprite(String file) {
         position = new Vector2(0, 0);
@@ -33,6 +34,12 @@ public class Sprite {
         loaded = true;
     }
     
+    public Sprite(String file, Vector2 position, Vector2 size) {
+        this(file);
+        SetPosition(position);
+        SetSize(size);
+    }
+    
     public boolean Loaded() {
         return loaded;
     }
@@ -41,9 +48,17 @@ public class Sprite {
         position = p;
     }
     
+    public void SetSize(Vector2 s) {
+        size = s;
+    }
+    
     public void Draw(Graphics g) {
         if(Loaded()) {
-            g.drawImage(image, (int) position.x, (int) position.y, null);
+            if(size == null) {
+                g.drawImage(image, (int) position.x, (int) position.y, null);
+            } else {
+                g.drawImage(image, (int) position.x, (int) position.y, (int) size.x, (int) size.y, null);
+            }
         }
     }
 }

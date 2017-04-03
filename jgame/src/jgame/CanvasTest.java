@@ -59,12 +59,12 @@ public class CanvasTest {
         });
         
         game.Draw(new DrawCallback() {
-            public void run(Graphics g, float deltaTime) {
-                g.clearRect(0, 0, game.width(), game.height());
-                grid.Draw(g);
+            public void run(GameGraphics g, float deltaTime) {
+                g.graphics.clearRect(0, 0, game.width(), game.height());
+                grid.Draw(g.graphics);
                 
-                g.setColor(Color.red);
-                g.drawOval(pos.intX(), pos.intY(), 60, 60); //FOR CIRCLE
+                g.graphics.setColor(Color.red);
+                g.graphics.drawOval(pos.intX(), pos.intY(), 60, 60); //FOR CIRCLE
             }
         });
         

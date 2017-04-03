@@ -3,16 +3,14 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package jgame;
-
-import java.awt.Graphics;
+package genericalgorithm;
 
 /**
  *
- * @author Thomas
+ * @author thmun
  */
-
-@FunctionalInterface
-public interface DrawCallback {
-    public void run(GameGraphics g, float deltaTime);
+public class Population {
+    public Population() {
+        
+    }
 }

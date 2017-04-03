@@ -5,13 +5,20 @@
  */
 package jgame;
 
+import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Rectangle;
 import java.awt.Toolkit;
+import java.io.OutputStream;
+import java.io.PrintStream;
 import javax.swing.JFrame;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Random;
 import javax.swing.JComponent;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
+import javax.swing.ScrollPaneConstants;
 /**
  *
  * @author Thomas
@@ -46,6 +53,9 @@ public class Game {
     private MouseCallback mouseCallback;
     private Thread updateThread;
     private JFrame window;
+    private JTextArea log_output;
+    private KeyboardCallback keyboardCallback;
+    private JScrollPane text_scroll;
     
     // Getters and setters
     public int width() {
@@ -66,6 +76,10 @@ public class Game {
     
     public MouseCallback mouseCallback() {
         return mouseCallback;
+    }
+    
+    public KeyboardCallback keyboardCallback() {
+        return keyboardCallback;
     }
     
     // Constructor(s)
@@ -136,6 +150,59 @@ public class Game {
         frame.requestFocusInWindow();
     }
     
+    public void useConsole() {
+        setupLogger(0, 0, width(), height() / 4);
+    }
+    
+    public void useConsole(int x, int y, int width, int height) {
+        setupLogger(x, y, width, height);
+    }
+    
+    public void setupLogger(int x, int y, int width, int height) {
+        Color background = new Color(0.0f, 0.0f, 0.0f, 0.5f);
+        
+        log_output = new JTextArea();
+        log_output.setEditable(false);
+        log_output.setBackground(background);
+        log_output.setForeground(Color.WHITE);
+        
+        text_scroll = new JScrollPane(log_output);
+        text_scroll.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+        text_scroll.setBounds(x, y, width, height);
+        text_scroll.setBackground(new Color(0, 0, 0, 0));
+        text_scroll.setBorder(null);
+        addComponent(text_scroll);
+    }
+    
+    public void replaceStdOut() {
+        System.setOut(new GameOutput(System.out));
+    }
+    
+    public void hideConsole() {
+        text_scroll.setVisible(false);
+    }
+    
+    public void showConsole() {
+        text_scroll.setVisible(true);
+    }
+    
+    public void log(Object msg) {
+        log(msg, true);
+    }
+    
+    public void log(Object msg, boolean nl) {
+        if(log_output != null) {
+            Rectangle bounds = log_output.getBounds();
+            String old_text = log_output.getText();
+            
+            if(nl) {
+                old_text = old_text + "\n";
+            }
+            log_output.setText(old_text + msg.toString());
+            log_output.setBounds(bounds);
+        }
+    }
+    
     public boolean running() {
         return state;
     }
@@ -161,13 +228,15 @@ public class Game {
         mouseCallback = cb;
     }
     
+    public void onKeyboard(KeyboardCallback cb) {
+        keyboardCallback = cb;
+    }
+    
     public void Update(UpdateCallback c) {
-        //c.run(this);
         updateCallback = c;
     }
     
     public void Draw(DrawCallback c) {
-        System.out.println("Setting drawcallback");
         frame.onDraw(c);
     }
     
@@ -246,6 +315,20 @@ public class Game {
     
     public void addComponent(JComponent c) {
         frame.add(c);
+    }
+    
+    public class GameOutput extends PrintStream {
+        public GameOutput(OutputStream out) {
+            super(out, true);
+        }
+        
+        public void print(String s) {
+            log(s);
+        }
+        
+        public void println(String s) {
+            log(s, true);
+        }
     }
 }
 

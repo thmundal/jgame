@@ -5,14 +5,14 @@
  */
 package jgame;
 
-import java.awt.Graphics;
+import java.awt.event.KeyEvent;
 
 /**
  *
- * @author Thomas
+ * @author thmun
  */
-
-@FunctionalInterface
-public interface DrawCallback {
-    public void run(GameGraphics g, float deltaTime);
+public class KeyboardCallback {
+    public void down(KeyEvent e) {}
+    public void release(KeyEvent e) {}
+    public void hold(KeyEvent e) {}
 }

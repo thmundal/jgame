@@ -15,6 +15,7 @@ import javax.swing.JFrame;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Hashtable;
+import java.util.Map;
 import java.util.Random;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
@@ -62,6 +63,9 @@ public class Game {
     private JTextField console_input;
     private Hashtable<String, CommandInterface> commands;
     private JPanel logpanel;
+    private Hashtable<Character, String> default_keys;
+    private Hashtable<Character, String> custom_keys;
+    private boolean console_on;
     
     // Getters and setters
     public int width() {
@@ -116,6 +120,43 @@ public class Game {
         state = true;
         random = new Random(seedValue);
         commands = new Hashtable<String, CommandInterface>();
+        default_keys = new Hashtable<Character, String>();
+        custom_keys = new Hashtable<Character, String>();
+        
+        default_keys.put('|', "console");
+        custom_keys = default_keys;
+        console_on = false;
+    }
+    
+    public void bindKey(char key, String action) {
+        custom_keys.put(key, action);
+    }
+    
+    public String getBoundAction(char key) {
+        return custom_keys.get(key);
+    }
+    
+    public Character getKeyForAction(String action) {
+        for(Object e : custom_keys.entrySet()) {
+            Map.Entry entry = (Map.Entry) e;
+            if(entry.getValue() == action) {
+                return (Character) entry.getKey();
+            }
+        }
+        
+        return null;
+    }
+    
+    public void runBoundAction(String action) {
+        CommandInterface cmd = commands.get(action);
+        
+        if(cmd != null)  {
+            cmd.run(this);
+        } else {
+            if(action == "console") {
+                toggleConsole();
+            }
+        }
     }
     
     public long getSeed() {
@@ -170,21 +211,23 @@ public class Game {
         
         logpanel = new JPanel();
         logpanel.setBounds(x, y, width, height);
-        logpanel.setBackground(new Color(0, 0, 0, 0));
+        logpanel.setBackground(background);
         logpanel.setBorder(null);
         logpanel.setLayout(null);
         
         log_output = new JTextArea();
         log_output.setEditable(false);
-        //log_output.setBackground(background);
+        log_output.setBackground(new Color(0,0,0,0));
         log_output.setForeground(Color.WHITE);
         
         text_scroll = new JScrollPane(log_output);
+        text_scroll.setBackground(new Color(0, 0, 0, 0));
         text_scroll.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
-        text_scroll.setBounds(x, y, width, height);
+        text_scroll.setBounds(x, y, width, height - 30);
         
         console_input = new JTextField("aksjd");
         console_input.setBounds(x, y + height - 30, width, 25);
+        console_input.setBorder(null);
         console_input.addActionListener(e -> {
             String command = console_input.getText();
             CommandInterface cmd = commands.get(command);
@@ -197,14 +240,11 @@ public class Game {
             console_input.setText("");
         });
         
-        //log_output.add(console_input);
-        //addComponent(text_scroll);
-        
-        logpanel.setComponentZOrder(text_scroll, 0);
-        logpanel.setComponentZOrder(console_input, 1);
-        logpanel.add(text_scroll);
         logpanel.add(console_input);
+        logpanel.add(text_scroll);
         addComponent(logpanel);
+        
+        hideConsole();
     }
     
     public void replaceStdOut() {
@@ -212,11 +252,21 @@ public class Game {
     }
     
     public void hideConsole() {
+        console_on = false;
         logpanel.setVisible(false);
     }
     
     public void showConsole() {
+        console_on = true;
         logpanel.setVisible(true);
+    }
+    
+    public void toggleConsole() {
+        if(console_on) {
+            hideConsole();
+        } else {
+            showConsole();
+        }
     }
     
     public void addCommand(String command, CommandInterface c) {
@@ -245,7 +295,6 @@ public class Game {
     }
     
     public boolean isKeyDown(String k) {
-        //System.out.println(keys_down.toString());
         return keys_down.indexOf(k.toCharArray()[0]) > -1;
     }
     
@@ -254,10 +303,8 @@ public class Game {
         
         if(index > -1 && state == KeyState.UP) {
             keys_down.remove(index);
-            //System.out.println("Removed key state of " + k);
         } else if(state == KeyState.DOWN && index == -1) {
             keys_down.add(k);
-            //System.out.println("Added key state for " + k);
         }
     }
     

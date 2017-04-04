@@ -14,10 +14,13 @@ import java.io.PrintStream;
 import javax.swing.JFrame;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Hashtable;
 import java.util.Random;
 import javax.swing.JComponent;
+import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
+import javax.swing.JTextField;
 import javax.swing.ScrollPaneConstants;
 /**
  *
@@ -56,6 +59,9 @@ public class Game {
     private JTextArea log_output;
     private KeyboardCallback keyboardCallback;
     private JScrollPane text_scroll;
+    private JTextField console_input;
+    private Hashtable<String, CommandInterface> commands;
+    private JPanel logpanel;
     
     // Getters and setters
     public int width() {
@@ -109,6 +115,7 @@ public class Game {
         pause = false;
         state = true;
         random = new Random(seedValue);
+        commands = new Hashtable<String, CommandInterface>();
     }
     
     public long getSeed() {
@@ -161,17 +168,43 @@ public class Game {
     public void setupLogger(int x, int y, int width, int height) {
         Color background = new Color(0.0f, 0.0f, 0.0f, 0.5f);
         
+        logpanel = new JPanel();
+        logpanel.setBounds(x, y, width, height);
+        logpanel.setBackground(new Color(0, 0, 0, 0));
+        logpanel.setBorder(null);
+        logpanel.setLayout(null);
+        
         log_output = new JTextArea();
         log_output.setEditable(false);
-        log_output.setBackground(background);
+        //log_output.setBackground(background);
         log_output.setForeground(Color.WHITE);
         
         text_scroll = new JScrollPane(log_output);
         text_scroll.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
         text_scroll.setBounds(x, y, width, height);
-        text_scroll.setBackground(new Color(0, 0, 0, 0));
-        text_scroll.setBorder(null);
-        addComponent(text_scroll);
+        
+        console_input = new JTextField("aksjd");
+        console_input.setBounds(x, y + height - 30, width, 25);
+        console_input.addActionListener(e -> {
+            String command = console_input.getText();
+            CommandInterface cmd = commands.get(command);
+            if(cmd != null) {
+                cmd.run(this);
+            } else {
+                log("No such command");
+            }
+            
+            console_input.setText("");
+        });
+        
+        //log_output.add(console_input);
+        //addComponent(text_scroll);
+        
+        logpanel.setComponentZOrder(text_scroll, 0);
+        logpanel.setComponentZOrder(console_input, 1);
+        logpanel.add(text_scroll);
+        logpanel.add(console_input);
+        addComponent(logpanel);
     }
     
     public void replaceStdOut() {
@@ -179,11 +212,15 @@ public class Game {
     }
     
     public void hideConsole() {
-        text_scroll.setVisible(false);
+        logpanel.setVisible(false);
     }
     
     public void showConsole() {
-        text_scroll.setVisible(true);
+        logpanel.setVisible(true);
+    }
+    
+    public void addCommand(String command, CommandInterface c) {
+        commands.put(command, c);
     }
     
     public void log(Object msg) {

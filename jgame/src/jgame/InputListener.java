@@ -24,14 +24,17 @@ public class InputListener implements KeyListener, MouseListener, MouseMotionLis
     
     @Override
     public void keyTyped(KeyEvent e) {
-//        System.out.println("Key typed " + e.getKeyChar());
         if(game.keyboardCallback() != null) {
             game.keyboardCallback().down(e);
+        }
+        
+        String action = game.getBoundAction(e.getKeyChar());
+        if(action != null) {
+            game.runBoundAction(action);
         }
     }
     
     public void keyPressed(KeyEvent e) {
-        //System.out.println("Key pressed " + e.getKeyChar());
         game.setKeyState(e.getKeyChar(), KeyState.DOWN);
         
         if(game.keyboardCallback() != null) {
@@ -40,7 +43,6 @@ public class InputListener implements KeyListener, MouseListener, MouseMotionLis
     }
     
     public void keyReleased(KeyEvent e) {
-//        System.out.println("Key released " + e.getKeyChar());
         game.setKeyState(e.getKeyChar(), KeyState.UP);
         
         if(game.keyboardCallback() != null) {

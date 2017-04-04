@@ -39,35 +39,61 @@ public class MinSpanTree<ValueType extends UGNodeInterface> {
     
     public void makeTree(UGNode<ValueType> current) {
         //ArrayList<UGEdge<ValueType>> edge_queue = new ArrayList<UGEdge<ValueType>>();
+        createEdgeQueue(current);
+
+        if(edge_queue.isEmpty())
+            return;
+        
+        //while(!edge_queue.isEmpty()) {
+            UGEdge<ValueType> selected_edge = null;
+            
+            UGNode<ValueType> selected_node = null;
+            
+            for(int i=0; i<edge_queue.size(); i++) {
+                UGEdge<ValueType> current_edge = edge_queue.get(i);
+
+                if(selected_edge == null || current_edge.weight() < selected_edge.weight()) {
+                    // partner = current.getPartner(current_edge);
+                    selected_edge = current_edge;
+                }
+            }
+            
+            if(selected_edge != null) {
+                edge_queue.remove(selected_edge);
+                visited_edges.add(selected_edge);
+                
+                // The a and b components of the edge
+                UGNode<ValueType> a = selected_edge.a();
+                UGNode<ValueType> b = selected_edge.b();
+
+                if(!(mst.contains(a) && mst.contains(b))) {
+                    // Both nodes are already in the tree
+                    UGNode<ValueType> _a = mst.addNode(a.val());
+                    UGNode<ValueType> _b = mst.addNode(b.val());
+                    mst.createEdge(_a, _b);
+                }
+                
+                // Select the node that is already in the graph
+                current = a;
+                if(!mst.contains(current))
+                    current = b;
+                
+                makeTree(current.getPartner(selected_edge));
+            }
+        //}
+        
+        // a & !b + !b & a
+        // A!B + !AB
+        // a && !b || b && !a
+        // (A || B) && !(A && B)
+    }
+    
+    public void createEdgeQueue(UGNode<ValueType> current) {        
         current.edges().forEach(edge -> {
             if(!edge_queue.contains(edge) && !visited_edges.contains(edge))
                 edge_queue.add(edge);
         });
 
-        if(edge_queue.isEmpty())
-            return;
-        
-        UGEdge<ValueType> selected_edge = null;
-        UGNode<ValueType> partner = null;
-        
-        for(int i=0; i<edge_queue.size(); i++) {
-            UGEdge<ValueType> current_edge = edge_queue.get(i);
-            partner = current.getPartner(current_edge);
-            
-            if(selected_edge == null || current_edge.weight() < selected_edge.weight())
-                selected_edge = current_edge;
-        }
-        
-        if(partner != null) {
-            if(selected_edge != null) {
-                edge_queue.remove(selected_edge);
-                visited_edges.add(selected_edge);
-                if(mst.nodeByValue(partner.val()) == null) {
-                    mst.createEdge(mst.addNode(current.val()), mst.addNode(partner.val()));
-                }
-            }
-            makeTree(partner);
-        }
     }
     
     public void makeTree() {

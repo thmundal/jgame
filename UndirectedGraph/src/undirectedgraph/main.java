@@ -26,60 +26,59 @@ public class main {
     
     static MinSpanTree minspan_tree;
     static boolean display_tree;
+    static boolean node_dancing;
     
     static UndirectedGraph<Vector> draw_graph;
     
     public static void main(String[] args) {
-        graph = new UndirectedGraph<Vector>();
-        game = new Game();
+        graph = new UndirectedGraph<Vector>();      // Initialize an undirected graph that contains nodes with a vector as value
         
+        // Initialize the graphical interface
+        game = new Game();
         game.useConsole();
         game.replaceStdOut();
         
-        // You can change the random seed here to always get the same graph
-        //game.setSeed(1);
-        
-        // Set the graph to use same random generator as the gameloop so that is affected by the same seed
-        graph.setRandom(game.random);
-        
         // Set up some variables
-        console_toggle = true;
-        radius = 30;
-        mouse = new Vector2(0, 0);
-        minspan_tree = null;
-        display_tree = false;
-        draw_graph = null;
+        console_toggle  = true;
+        radius          = 10;
+        mouse           = new Vector2(0, 0);
+        minspan_tree    = null;
+        display_tree    = false;
+        draw_graph      = null;
+        node_dancing    = false;
         
+        // A welcome message ;)
         game.log("Welcome to the Undirected Graph project. Press \"|\" to toggle this output console");
         
-        // Create random nodes
-        /*for(int i=0; i<20; i++) {
-            Vector pos = new Vector(game.random.nextFloat() * game.width(), game.random.nextFloat() * game.height());
-            graph.addNode(pos);
-        }
-        
-        // Create random edges
-        for(int i=0; i<10; i++) {
-            graph.createEdge(graph.randomNode(), graph.randomNode());
-        }*/
-        
-        UGNode<Vector> n1 = graph.addNode(new Vector(500, 500));
+        // Create nodes and put them in the graph
+        UGNode<Vector> n1 = graph.addNode(new Vector(300, 200));
         UGNode<Vector> n2 = graph.addNode(new Vector(710, 550));
         UGNode<Vector> n3 = graph.addNode(new Vector(450, 600));
         UGNode<Vector> n4 = graph.addNode(new Vector(600, 600));
+        UGNode<Vector> n5 = graph.addNode(new Vector(900, 600));
+        UGNode<Vector> n6 = graph.addNode(new Vector(900, 200));
         
+        // Create edges between nodes
         graph.createEdge(n1, n2);
         graph.createEdge(n2, n3);
         graph.createEdge(n3, n4);
         graph.createEdge(n1, n3);
+        graph.createEdge(n4, n5);
+        graph.createEdge(n4, n1);
+        graph.createEdge(n2, n6);
         
-        // Extract all the nodes 
-        ArrayList<UGNode<Vector>> nodes = graph.nodes();
-        game.log("Number of nodes: " + nodes.size());
+        game.log("Number of nodes: " + graph.nodes().size());
         
-        // Extract all edges
-        ArrayList<UGEdge<Vector>> edges = graph.edges();
+        game.addCommand("dance", game -> {
+            node_dancing = !node_dancing;
+            game.log("Dancing toggled");
+        });
         
+        game.addCommand("prim", game -> {
+            prim();
+        });
+        
+        // Keyboard events
         game.onKeyboard(new KeyboardCallback() {
             public void down(KeyEvent e) {
                 if(console_toggle) {
@@ -92,6 +91,7 @@ public class main {
             }
         });
         
+        // Mouse events
         game.onMouse(new MouseCallback() {
             boolean focus;
             
@@ -100,13 +100,12 @@ public class main {
                 mouse.x = e.getX();
                 mouse.y = e.getY();
                 
-                nodes.forEach(node -> {
+                // If we clicked on a node
+                graph.nodes().forEach(node -> {
                     if(mouse.subtract(node.val()).length() < radius && display_tree == false) {
                         game.log("Calculate minimal spanning tree from node with value" + node.val().toString());
                         focus = true;
-                        display_tree = true;
-                        minspan_tree = new MinSpanTree<Vector>(graph, node);
-                        
+                        prim(node);
                         return;
                     }
                     
@@ -121,9 +120,6 @@ public class main {
         });
         
         game.Update((g, deltaTime) -> {
-        });
-        
-        game.Draw((g, deltaTime) -> {
             // Display the graph unless we clicked a node to create a minimal spanning tree from
             if(!display_tree) {
                 draw_graph = graph;
@@ -131,6 +127,16 @@ public class main {
                 if(minspan_tree != null)
                     draw_graph = minspan_tree.graph();
             }
+            
+            if(node_dancing) {
+                draw_graph.nodes().forEach(node -> {
+                    Vector newval = new Vector(node.val().x + (-1 + game.random.nextInt(3)), node.val().y + (-1 + game.random.nextInt(3)));
+                    node.setVal(newval);
+                });
+            }
+        });
+        
+        game.Draw((g, deltaTime) -> {
             // Draw nodes
             draw_graph.nodes().forEach(node -> {
                 g.Circle(node.val(), radius);
@@ -150,12 +156,13 @@ public class main {
         game.run();
     }
     
-    public static void drawTree(MSNode<UGNode<Vector>> n, GameGraphics g) {
-        n.children().forEach(node -> {
-            g.Circle(node.val().val(), radius);
-            g.Line(node.val().val(), node.parent().val().val());
-            drawTree(node, g);
-        });
+    public static void prim(UGNode<Vector> node) {
+        display_tree = true;
+        minspan_tree = new MinSpanTree<Vector>(graph, node);
     }
     
+    
+    public static void prim() {
+        prim(graph.randomNode());
+    }
 }

@@ -42,4 +42,8 @@ public class UGNode<Value extends UGNodeInterface> {
         
         return e.a();
     }
+    
+    public void setVal(Value v) {
+        value = v;
+    }
 }

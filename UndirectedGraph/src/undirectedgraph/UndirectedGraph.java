@@ -102,4 +102,8 @@ public class UndirectedGraph<Value extends UGNodeInterface> {
         
         return null;
     }
+    
+    public boolean contains(UGNode<Value> n) {
+        return (nodeByValue(n.val()) != null);
+    }
 }

@@ -33,6 +33,7 @@ public class UGEdge<Value extends UGNodeInterface> {
     }
     
     public float weight() {
+        weight = a().val().weight(b().val());
         return weight;
     }
 }

@@ -5,17 +5,14 @@
  */
 package undirectedgraph;
 
-import MinSpantree.MSNode;
 import MinSpantree.MinSpanTree;
-import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
-import java.util.ArrayList;
 import valuepacks.Vector;
 import jgame.*;
 
 /**
- *
- * @author thmun
+ * The Undirected Graph project
+ * @author Thomas Mundal
  */
 public class main {
     static UndirectedGraph<Vector> graph;
@@ -30,6 +27,10 @@ public class main {
     
     static UndirectedGraph<Vector> draw_graph;
     
+    /**
+     * Main function
+     * @param args 
+     */
     public static void main(String[] args) {
         graph = new UndirectedGraph<Vector>();      // Initialize an undirected graph that contains nodes with a vector as value
         
@@ -37,6 +38,7 @@ public class main {
         game = new Game();
         game.useConsole();
         game.replaceStdOut();
+        game.showConsole();
         
         // Set up some variables
         console_toggle  = true;
@@ -48,7 +50,9 @@ public class main {
         node_dancing    = false;
         
         // A welcome message ;)
-        game.log("Welcome to the Undirected Graph project. Press \"|\" to toggle this output console");
+        game.log("Welcome to the Undirected Graph project. Press \""+game.getKeyForAction("console")+"\" to toggle this output console");
+        game.log("To calculate MST, click on a node, press \"p\" on the keyboard, or type \"prim\" in this console");
+        game.log("To go back to displaying the graph, click anywhere but on a node inside this application");
         
         // Create nodes and put them in the graph
         UGNode<Vector> n1 = graph.addNode(new Vector(300, 200));
@@ -67,29 +71,19 @@ public class main {
         graph.createEdge(n4, n1);
         graph.createEdge(n2, n6);
         
-        game.log("Number of nodes: " + graph.nodes().size());
-        
+        // A fun command for making the nodes have a dancing party!
         game.addCommand("dance", game -> {
             node_dancing = !node_dancing;
             game.log("Dancing toggled");
         });
         
+        // A command for running the mst calculation
         game.addCommand("prim", game -> {
-            prim();
+            MST();
         });
         
-        // Keyboard events
-        game.onKeyboard(new KeyboardCallback() {
-            public void down(KeyEvent e) {
-                if(console_toggle) {
-                    game.hideConsole();
-                    console_toggle = false;
-                } else {
-                    game.showConsole();
-                    console_toggle = true;
-                }
-            }
-        });
+        // Bind the prim calculation to "p"
+        game.bindKey('p', "prim");
         
         // Mouse events
         game.onMouse(new MouseCallback() {
@@ -105,14 +99,14 @@ public class main {
                     if(mouse.subtract(node.val()).length() < radius && display_tree == false) {
                         game.log("Calculate minimal spanning tree from node with value" + node.val().toString());
                         focus = true;
-                        prim(node);
+                        main.MST(node);
                         return;
                     }
                     
                 });
                 
                 if(!focus) {
-                    game.log("I clicked the background, go back to displaying the graph");
+                    // Clicked on the background, display the original graph
                     minspan_tree = null;
                     display_tree = false;
                 }
@@ -120,7 +114,7 @@ public class main {
         });
         
         game.Update((g, deltaTime) -> {
-            // Display the graph unless we clicked a node to create a minimal spanning tree from
+            // Decide here what graph to draw. The original graph, or the MST
             if(!display_tree) {
                 draw_graph = graph;
             } else {
@@ -128,6 +122,7 @@ public class main {
                     draw_graph = minspan_tree.graph();
             }
             
+            // The dance party here! :D
             if(node_dancing) {
                 draw_graph.nodes().forEach(node -> {
                     Vector newval = new Vector(node.val().x + (-1 + game.random.nextInt(3)), node.val().y + (-1 + game.random.nextInt(3)));
@@ -153,16 +148,24 @@ public class main {
             });
         });
         
+        // Start game loop
         game.run();
     }
     
-    public static void prim(UGNode<Vector> node) {
+    /**
+     * A function for calling the MST calculation
+     * @param node 
+     */
+    public static void MST(UGNode<Vector> node) {
+        game.log("Calculate MST");
         display_tree = true;
         minspan_tree = new MinSpanTree<Vector>(graph, node);
     }
     
-    
-    public static void prim() {
-        prim(graph.randomNode());
+    /**
+     * Calculate MST from a random node
+     */
+    public static void MST() {
+        MST(graph.randomNode());
     }
 }

@@ -66,6 +66,7 @@ public class Game {
     private Hashtable<Character, String> default_keys;
     private Hashtable<Character, String> custom_keys;
     private boolean console_on;
+    private Vector2 origin;
     
     // Getters and setters
     public int width() {
@@ -126,6 +127,15 @@ public class Game {
         default_keys.put('|', "console");
         custom_keys = default_keys;
         console_on = false;
+        origin = new Vector2(0, 0);
+    }
+    
+    public Vector2 origin() {
+        return origin;
+    }
+    
+    public void setOrigin(Vector2 o) {
+        origin = o;
     }
     
     public void bindKey(char key, String action) {
@@ -199,7 +209,8 @@ public class Game {
     }
     
     public void useConsole() {
-        setupLogger(0, 0, width(), height() / 4);
+        //setupLogger(0, 0, width(), height() / 4);
+        setupLogger(-origin.intX(), -origin.intY(), width(), height() / 4);
     }
     
     public void useConsole(int x, int y, int width, int height) {
@@ -219,14 +230,15 @@ public class Game {
         log_output.setEditable(false);
         log_output.setBackground(new Color(0,0,0,0));
         log_output.setForeground(Color.WHITE);
+        log_output.setBounds(0, 0, width, height);
         
         text_scroll = new JScrollPane(log_output);
         text_scroll.setBackground(new Color(0, 0, 0, 0));
         text_scroll.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
-        text_scroll.setBounds(x, y, width, height - 30);
+        text_scroll.setBounds(0, 0, width, height - 30);
         
-        console_input = new JTextField("aksjd");
-        console_input.setBounds(x, y + height - 30, width, 25);
+        console_input = new JTextField();
+        console_input.setBounds(0, height - 30, width, 25);
         console_input.setBorder(null);
         console_input.addActionListener(e -> {
             String command = console_input.getText();
@@ -356,7 +368,7 @@ public class Game {
                             System.out.println("No update callback defined");
                             state = false;
                         }
-                        frame.repaint();
+                        window.repaint();
                     }
 
                     if(wait) {

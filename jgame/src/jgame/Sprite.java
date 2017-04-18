@@ -32,6 +32,8 @@ public class Sprite {
             Logger.getLogger(Sprite.class.getName()).log(Level.SEVERE, null, ex);
         }
         loaded = true;
+        
+        size = new Vector2(image.getWidth(), image.getHeight());
     }
     
     public Sprite(String file, Vector2 position, Vector2 size) {
@@ -53,12 +55,32 @@ public class Sprite {
     }
     
     public void Draw(Graphics g) {
+        Draw(g, position);
+    }
+    
+    public void Draw(Graphics g, Vector2 pos) {
         if(Loaded()) {
             if(size == null) {
-                g.drawImage(image, (int) position.x, (int) position.y, null);
+                g.drawImage(image, (int) pos.x, (int) pos.y, null);
             } else {
-                g.drawImage(image, (int) position.x, (int) position.y, (int) size.x, (int) size.y, null);
+                g.drawImage(image, (int) pos.x, (int) pos.y, (int) size.x, (int) size.y, null);
             }
         }
+    }
+    
+    public float width() {
+        return size.x;
+    }
+    
+    public float height() {
+        return size.y;
+    }
+    
+    public int intWidth() {
+        return (int) size.x;
+    }
+    
+    public int intHeight() {
+        return (int) size.y;
     }
 }

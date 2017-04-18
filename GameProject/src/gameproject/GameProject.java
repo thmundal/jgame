@@ -164,20 +164,20 @@ public class GameProject {
             }
         });
         
-        game.Draw((Graphics g, float deltaTime) -> {
-            grid.Draw(g);
+        game.Draw((GameGraphics g, float deltaTime) -> {
+            grid.Draw(g.graphics);
             
-            g.setColor(Color.BLUE);
-            g.drawString("Score: " + score, 10, 10);
-            g.drawString("Highscore: " + highscore, 10, 30);
+            g.graphics.setColor(Color.BLUE);
+            g.Text("Score: " + score, new Vector2(10, 10));
+            g.Text("Highscore: " + highscore, new Vector2(10, 30));
             
-            g.drawString("AI Speed: " + speed, 10, 50);
+            g.Text("AI Speed: " + speed, new Vector2(10, 50));
             
             playerSprite.SetPosition(player_pos);
-            playerSprite.Draw(g);
+            playerSprite.Draw(g.graphics);
             
             enemySprite.SetPosition(ai_pos);
-            enemySprite.Draw(g);
+            enemySprite.Draw(g.graphics);
         });
         
         game.onMouse(new MouseCallback() {

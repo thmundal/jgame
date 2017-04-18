@@ -10,6 +10,8 @@ import java.util.ArrayList;
 /**
  *
  * @author thmun
+ * Denne klassen ble ikke brukt allikevel i dette prosjektet. Men gjør vondt å slette klasser som teknisk sett kan brukes til noe
+ * Denne klassen ble i utgangspunktet laget for en prioritetskø, men gikk bort fra denne metoden.
  */
 public class MSNode<ValueType> {
     private ValueType value;

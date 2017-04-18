@@ -55,4 +55,12 @@ public class GameGraphics {
     public void Line(Vector2 from, Vector2 to) {
         graphics.drawLine(from.intX(), from.intY(), to.intX(), to.intY());
     }
+    
+    public void Square(Vector2 pos, int size) {
+        graphics.drawRect(pos.intX() - size / 2, pos.intY() - size / 2, size, size);
+    }
+    
+    public void Sprite(Sprite s, Vector2 pos) {
+        s.Draw(graphics, new Vector2(pos.x - s.width() / 2, pos.y - s.height() / 2));
+    }
 }

@@ -76,6 +76,41 @@ public class Vector2 {
         return scale(1 / length());
     }
     
+    /**
+     * Not sure if this will work
+     * @param min
+     * @param max 
+     */
+    public void constrain(Vector2 min, Vector2 max) {
+        if(subtract(min).length() < 0) {
+            x = min.x;
+            y = min.y;
+        }
+        
+        if(subtract(max).length() > 0) {
+            x = max.x;
+            y = max.y;
+        }
+    }
+    
+    public void constrainX(float min, float max) {
+        if(x < min)
+            x = min;
+        if(x > max)
+            x = max;
+    }
+    
+    public void constrainY(float min, float max) {
+        if(y < min) {
+            System.out.println("y is " + y);
+            System.out.println("min is " + min);
+            y = min;
+        }
+        if(y > max) {
+            y = max;
+        }
+    }
+    
     public String toString() {
         return "[" + x + ", " + y +"]";
     }

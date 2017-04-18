@@ -32,6 +32,8 @@ public class Drawer extends JPanel {
     }
     
     public void paintComponent(Graphics g) {
+        g.translate(game.origin().intX(), game.origin().intY());
+        
         Graphics2D g2 = (Graphics2D) g;
         RenderingHints rh = new RenderingHints(
             RenderingHints.KEY_ANTIALIASING,
@@ -46,12 +48,5 @@ public class Drawer extends JPanel {
         } else {
             System.out.println("No drawcallback defined");
         }
-    }
-    
-    public void Circle(Vector2 pos, int radius, Graphics g) {
-        int x = pos.intX() - radius / 2;
-        int y = pos.intY() - radius / 2;
-        
-        g.drawArc(x, y, radius, radius, 0, 360);
     }
 }

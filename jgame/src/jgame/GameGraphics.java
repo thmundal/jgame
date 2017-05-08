@@ -10,6 +10,15 @@ import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
 
+
+import java.nio.*;
+
+import static org.lwjgl.glfw.Callbacks.*;
+import static org.lwjgl.glfw.GLFW.*;
+import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.system.MemoryStack.*;
+import static org.lwjgl.system.MemoryUtil.*;
+
 /**
  *
  * @author thmun
@@ -62,5 +71,12 @@ public class GameGraphics {
     
     public void Sprite(Sprite s, Vector2 pos) {
         s.Draw(graphics, new Vector2(pos.x - s.width() / 2, pos.y - s.height() / 2));
+    }
+    
+    public void LineGL(Vector2 from, Vector2 to) {
+        glBegin(1);
+        glVertex2f(from.x, from.y);
+        glVertex2f(to.x, to.y);
+        glEnd();
     }
 }

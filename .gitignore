@@ -15,3 +15,6 @@
 /UndirectedGraph/dist/
 /PlatformGame/nbproject/private/
 /PlatformGame/build/
+/GLTest/nbproject/private/
+/GLTest/build/
+/jgame/hs_err_*

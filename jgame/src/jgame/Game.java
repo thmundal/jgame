@@ -23,6 +23,20 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.ScrollPaneConstants;
+
+import org.lwjgl.*;
+import org.lwjgl.glfw.*;
+import org.lwjgl.opengl.*;
+import org.lwjgl.system.*;
+
+import java.nio.*;
+
+import static org.lwjgl.glfw.Callbacks.*;
+import static org.lwjgl.glfw.GLFW.*;
+import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.opengl.GLUtil.setupDebugMessageCallback;
+import static org.lwjgl.system.MemoryStack.*;
+import static org.lwjgl.system.MemoryUtil.*;
 /**
  *
  * @author Thomas
@@ -47,7 +61,8 @@ public class Game {
     private boolean state;
     private Drawer frame;
     private UpdateCallback updateCallback;
-    private long last_time = System.nanoTime();
+    private DrawCallback drawCallback;
+    private float last_time = System.nanoTime();
     private String window_title;
     private boolean pause;
     private boolean wait;
@@ -57,6 +72,9 @@ public class Game {
     private MouseCallback mouseCallback;
     private Thread updateThread;
     private JFrame window;
+    private long gl_window;
+    private GameGraphics gameGraphics;
+    
     private JTextArea log_output;
     private KeyboardCallback keyboardCallback;
     private JScrollPane text_scroll;
@@ -67,6 +85,9 @@ public class Game {
     private Hashtable<Character, String> custom_keys;
     private boolean console_on;
     private Vector2 origin;
+    private UpdateCallback wakeupCallback;
+    private GLCapabilities glCapabilities;
+    private float now;
     
     // Getters and setters
     public int width() {
@@ -99,7 +120,8 @@ public class Game {
         width = w;
         
         defaultVariables();
-        initSwing();
+        //initSwing();
+        initGL();
     }
     
     public Game() {
@@ -110,7 +132,8 @@ public class Game {
         fullscreen = true;
         
         defaultVariables();
-        initSwing();
+        //initSwing();
+        initGL();
     }
     
     public void defaultVariables() {
@@ -128,6 +151,7 @@ public class Game {
         custom_keys = default_keys;
         console_on = false;
         origin = new Vector2(0, 0);
+        gameGraphics = new GameGraphics();
     }
     
     public Vector2 origin() {
@@ -208,8 +232,60 @@ public class Game {
         frame.requestFocusInWindow();
     }
     
+    public void initGL() {
+        GLFWErrorCallback.createPrint(System.err).set();
+        
+        if(!glfwInit()) {
+            throw new IllegalStateException("Unable to initialize GLFW");
+        }
+        
+        glfwDefaultWindowHints();
+        glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
+        glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
+        
+        // Get primary monitor information
+        long primary_monitor = glfwGetPrimaryMonitor();
+        long selected_monitor = primary_monitor;
+        /*
+        // Get all monitors
+        PointerBuffer monitors = glfwGetMonitors();
+        */
+        
+        gl_window = glfwCreateWindow(width, height, "Hello World!", (fullscreen?selected_monitor:NULL), NULL);
+        if(gl_window == NULL) {
+            throw new RuntimeException("Fail to create GLFW window");
+        }
+        
+        glfwSetKeyCallback(gl_window, (window, key, scancode, action, mods) -> {
+           if(key == GLFW_KEY_ESCAPE && action == GLFW_RELEASE) {
+               glfwSetWindowShouldClose(window, true);
+           }
+        });
+        
+        try(MemoryStack stack = stackPush()) {
+            IntBuffer pWidth = stack.mallocInt(1);
+            IntBuffer pHeight = stack.mallocInt(1);
+            
+            IntBuffer pixelWidth = stack.mallocInt(1);
+            IntBuffer pixelHeight = stack.mallocInt(1);
+            
+            glfwGetWindowSize(gl_window, pWidth, pHeight);
+            glfwGetFramebufferSize(gl_window, pixelWidth, pixelHeight);
+            
+            GLFWVidMode vidmode = glfwGetVideoMode(selected_monitor);
+            glfwSetWindowPos(gl_window, (vidmode.width() - pWidth.get(0)) / 2, (vidmode.height() - pHeight.get(0)) / 2);
+        }
+        
+        glfwMakeContextCurrent(gl_window);
+        
+        glCapabilities = GL.createCapabilities();
+        glfwSwapInterval(1);
+        glfwShowWindow(gl_window);
+        
+        setupDebugMessageCallback(System.out);
+    }
+    
     public void useConsole() {
-        //setupLogger(0, 0, width(), height() / 4);
         setupLogger(-origin.intX(), -origin.intY(), width(), height() / 4);
     }
     
@@ -333,7 +409,12 @@ public class Game {
     }
     
     public void Draw(DrawCallback c) {
-        frame.onDraw(c);
+        //frame.onDraw(c);
+        drawCallback = c;
+    }
+    
+    public void Wakeup(UpdateCallback c) {
+        wakeupCallback = c;
     }
     
     public void Pause() {
@@ -353,52 +434,51 @@ public class Game {
     public void run() {
         Game g = this;
         
-        updateThread = new Thread() {
-            public void run() {
-                while(running()) {
-                    long time = System.nanoTime();
+        GL.setCapabilities(glCapabilities);
+        glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+        
+        wakeupCallback.run(g, 0);
+        
+        while(!glfwWindowShouldClose(gl_window)) {
+            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+            
+            long time = System.nanoTime();
 
-                    deltaTime = ((time - last_time) / 1000000000f);
-                    last_time = time;
+            deltaTime = ((time - last_time) / 1000000000f);
+            last_time = time;
 
-                    if(!pause) {
-                        if(updateCallback != null) {
-                            updateCallback.run(g, new Float(deltaTime));
-                        } else {
-                            System.out.println("No update callback defined");
-                            state = false;
-                        }
-                        window.repaint();
-                    }
-
-                    if(wait) {
-                        wait = false;
-                        try {
-                            this.sleep(wait_seconds * 1000);
-                            wait = false;
-                        } catch(InterruptedException e) {
-                            System.out.println("Wait failed");
-                        }
-                    }
-
-                    if(frameRate > 0) {
-                        // Throttle frame time based on FPS
-                        double remainingFrameTime = (last_time - System.nanoTime()) / 1000000000 + timePerFrame;
-                        // System.out.println(remainingFrameTime);
-                        if(remainingFrameTime > 0) {
-                            long millis = (long) (remainingFrameTime * 1000);
-                            int nanos = (int) (remainingFrameTime * 1000 - millis) * 1000000;
-                            // System.out.println(millis + "\t" + nanos);
-                            try {
-                                Thread.sleep(millis, nanos);
-                            } catch (InterruptedException ex) {
-                            }
-                        }
-                    }
-                } 
+            if(!pause) {
+                if(updateCallback != null) {
+                    updateCallback.run(g, new Float(deltaTime));
+                    drawCallback.run(gameGraphics, deltaTime);
+                } else {
+                    System.out.println("No update callback defined");
+                    state = false;
+                }
             }
-        };
-        updateThread.start();
+
+            if(wait) {
+                wait = false;
+                try {
+                    Thread.sleep(wait_seconds * 1000);
+                    wait = false;
+                } catch(InterruptedException e) {
+                    System.out.println("Wait failed");
+                }
+            }
+
+            now = (float) glfwGetTime();
+            deltaTime = now - last_time;
+            last_time = now;
+            
+            glfwPollEvents();
+            glfwSwapBuffers(gl_window);
+        }
+
+        glfwFreeCallbacks(gl_window);
+        glfwDestroyWindow(gl_window);
+        glfwTerminate();
+        glfwSetErrorCallback(null).free();
     }
     
     public void setFrameRate(float fps) {

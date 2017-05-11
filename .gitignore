@@ -10,8 +10,6 @@
 /libsort/nbproject/private/
 /GenericAlgorithm/nbproject/private/
 /GenericAlgorithm/build/
-/UndirectedGraph/nbproject/private/
-/UndirectedGraph/build/
-/UndirectedGraph/dist/
 /PlatformGame/nbproject/private/
 /PlatformGame/build/
+jgame/hs_err*

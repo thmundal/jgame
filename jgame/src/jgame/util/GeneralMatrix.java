@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package jgame;
+package jgame.util;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
@@ -53,10 +53,11 @@ public class GeneralMatrix<T extends GeneralMatrix> {
         return matrix[i];
     }
     
-    public T matrixMultiply(GeneralMatrix in) throws UnsupporedMatrixException {
+    public T matrixMultiply(GeneralMatrix in) {
         // Check dimensions
         if(cols != in.rows()) {
-            throw new UnsupporedMatrixException();
+            System.out.println("Error: Cannot multiply these");
+            return null;
         }
         
         int[] newmatrix = new int[rows * in.cols()];
@@ -77,6 +78,17 @@ public class GeneralMatrix<T extends GeneralMatrix> {
         T out = (T) new GeneralMatrix(rows, in.cols());
         out.populate(newmatrix);
         
+        return out;
+    }
+    
+    public String toString() {
+        String out = "";
+        for(int x=0; x<cols; x++) {
+            for(int y=0; y<rows; y++) {
+                out += this.get(y + cols * x) + " ";
+            }
+            out += "\n";
+        }
         return out;
     }
 }

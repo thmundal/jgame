@@ -5,6 +5,8 @@
  */
 package jgame;
 
+import jgame.util.Vector2;
+
 /**
  *
  * @author thmun

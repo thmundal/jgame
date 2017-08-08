@@ -5,6 +5,7 @@
  */
 package jgame;
 
+import jgame.util.Vector2;
 import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Hashtable;

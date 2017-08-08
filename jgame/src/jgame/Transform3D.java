@@ -5,11 +5,13 @@
  */
 package jgame;
 
+import jgame.util.Vector3;
+
 /**
  *
  * @author thmun
  */
-class Transform3D {
+public class Transform3D {
     public Vector3 position;
     public float rotation;
 }

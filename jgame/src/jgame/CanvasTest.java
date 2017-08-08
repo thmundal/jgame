@@ -4,6 +4,8 @@
  * and open the template in the editor.
  */
 package jgame;
+import jgame.util.Vector2;
+import jgame.shapes.*;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
@@ -11,6 +13,10 @@ import java.io.File;
 import javax.imageio.ImageIO;
 
 import java.nio.FloatBuffer;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import jgame.util.GeneralMatrix;
+import jgame.util.Matrix2x2;
 import org.lwjgl.BufferUtils;
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL15.*;
@@ -36,96 +42,45 @@ public class CanvasTest {
     static int vboID;
     static ShaderProgram shaderProgram;
     
+    static Shape2D shape;
+    
     public static void main(String[] args) {
         System.out.println(org.lwjgl.Version.getVersion());
         
         final Game game = new Game(800,600);
         
-        /*--------- testing setup -------*/
+        
         game.Wakeup((g, d) -> {
-            shaderProgram = new ShaderProgram();
-            shaderProgram.attachVertexShader("shaders/vertex_shader.vs");
-            shaderProgram.attachFragmentShader("shaders/fragment_shader.fs");
-            shaderProgram.link();
-
-            vaoID = glGenVertexArrays();
-            glBindVertexArray(vaoID);
-
+            // A triangle
             float[] vertices = new float[] {
                 0.0f, 0.8f,
                 -0.8f, -0.8f,
                 0.8f, -0.8f
             };
+            
+            // A square
+            float[] square = new float[] {
+                -0.5f,  0.5f,// 1.0f, 0.0f, 0.0f, // Top-left
+                 0.5f,  0.5f,// 0.0f, 1.0f, 0.0f, // Top-right
+                 0.5f, -0.5f,// 0.0f, 0.0f, 1.0f, // Bottom-right
 
-            FloatBuffer verticesBuffer = BufferUtils.createFloatBuffer(vertices.length);
-            verticesBuffer.put(vertices).flip();
-            vboID = glGenBuffers();
-            glBindBuffer(GL_ARRAY_BUFFER, vboID);
-            glBufferData(GL_ARRAY_BUFFER, verticesBuffer, GL_STATIC_DRAW);
-            glVertexAttribPointer(0, 2, GL_FLOAT, false, 0, 0);
-            glBindVertexArray(0);
+                 0.5f, -0.5f,// 0.0f, 0.0f, 1.0f, // Bottom-right
+                -0.5f, -0.5f,// 1.0f, 1.0f, 1.0f, // Bottom-left
+                -0.5f,  0.5f //, 1.0f, 0.0f, 0.0f  // Top-left
+            };
+            
+            shape = new Shape2D(square);
         });
 
         
         game.Draw((g, deltaTime) -> {
-            shaderProgram.bind();
-            glBindVertexArray(vaoID);
-            glEnableVertexAttribArray(0);
-            glDrawArrays(GL_TRIANGLES, 0, 3);
-            glDisableVertexAttribArray(0);
-            glBindVertexArray(0);
-            shaderProgram.unbind();
+            shape.Draw();
         });
-        /*--------- testing setup end --------*/
         
         game.Update((g, deltaTime) -> {
         });
         
         game.run();
-        /*final int moveSpeed = 500;
-        
-        final Vector2 gravity = new Vector2(0, 100);
-        grid = new Grid(game.height(), game.width(), 32, 32);
-        
-        grid.CellAt(0, 0).color = Color.black;
-        grid.RandomCell().color = Color.green;
-        
-        game.Update(new UpdateCallback() {
-            public void run(Game g, float deltaTime) {
-                if(game.isKeyDown("a")) {
-                    speed.x = -moveSpeed;
-                }
-                
-                if(game.isKeyDown("d")) {
-                    speed.x = moveSpeed;
-                }
-                
-                if(game.isKeyDown("w")) {
-                    speed.y = -moveSpeed;
-                }
-                
-                if(game.isKeyDown("s")) {
-                    speed.y = moveSpeed;
-                }
-                
-                speed = speed.scale(deltaTime);
-                pos = pos.add(speed); //.add(gravity.scale(deltaTime));
-                
-                
-            }
-        });
-        
-        game.Draw(new DrawCallback() {
-            public void run(GameGraphics g, float deltaTime) {
-                g.graphics.clearRect(0, 0, game.width(), game.height());
-                grid.Draw(g.graphics);
-                
-                g.graphics.setColor(Color.red);
-                g.graphics.drawOval(pos.intX(), pos.intY(), 60, 60); //FOR CIRCLE
-            }
-        });
-        game.run();
-        */
         
     }
 }

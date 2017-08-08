@@ -5,6 +5,7 @@
  */
 package jgame;
 
+import jgame.util.Vector2;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.io.File;

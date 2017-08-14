@@ -5,6 +5,7 @@
  */
 package platformgame;
 
+import jgame.util.Vector2;
 import jgame.*;
 /**
  *

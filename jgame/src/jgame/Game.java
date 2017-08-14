@@ -31,6 +31,7 @@ import org.lwjgl.opengl.*;
 import org.lwjgl.system.*;
 
 import java.nio.*;
+import jgame.util.Global;
 
 import static org.lwjgl.glfw.Callbacks.*;
 import static org.lwjgl.glfw.GLFW.*;
@@ -70,6 +71,7 @@ public class Game {
     private int wait_seconds;
     private boolean fullscreen;
     private InputListener input;
+    public GLInputListener gl_input;
     private MouseCallback mouseCallback;
     private Thread updateThread;
     private JFrame window;
@@ -89,6 +91,9 @@ public class Game {
     private UpdateCallback wakeupCallback;
     private GLCapabilities glCapabilities;
     private float now;
+    
+    public static int WIDTH;
+    public static int HEIGHT;
     
     // Getters and setters
     public int width() {
@@ -120,9 +125,23 @@ public class Game {
         height = h;
         width = w;
         
+        HEIGHT = height;
+        WIDTH = width;
+        
+        Global.WIDTH = width;
+        Global.HEIGHT = height;
+        
         defaultVariables();
         //initSwing();
         initGL();
+    }
+    
+    public float x(int x) {
+        return x / width;
+    }
+    
+    public float y(int y) {
+        return y / height;
     }
     
     public Game() {
@@ -131,6 +150,9 @@ public class Game {
         height = screenSize.height;
         width = screenSize.width;
         fullscreen = true;
+        
+        HEIGHT = height;
+        WIDTH = width;
         
         defaultVariables();
         //initSwing();
@@ -153,6 +175,8 @@ public class Game {
         console_on = false;
         origin = new Vector2(0, 0);
         gameGraphics = new GameGraphics();
+        
+        Transform.global_size = new Vector2(width, height);
     }
     
     public Vector2 origin() {
@@ -257,10 +281,10 @@ public class Game {
             throw new RuntimeException("Fail to create GLFW window");
         }
         
+        gl_input = new GLInputListener(gl_window);
+        
         glfwSetKeyCallback(gl_window, (window, key, scancode, action, mods) -> {
-           if(key == GLFW_KEY_ESCAPE && action == GLFW_RELEASE) {
-               glfwSetWindowShouldClose(window, true);
-           }
+            gl_input.Listen(window, key, scancode, action, mods);
         });
         
         try(MemoryStack stack = stackPush()) {
@@ -438,7 +462,8 @@ public class Game {
         GL.setCapabilities(glCapabilities);
         glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
         
-        wakeupCallback.run(g, 0);
+        if(wakeupCallback != null)
+            wakeupCallback.run(g, 0);
         
         while(!glfwWindowShouldClose(gl_window)) {
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -446,6 +471,7 @@ public class Game {
             long time = System.nanoTime();
 
             deltaTime = ((time - last_time) / 1000000000f);
+            
             last_time = time;
 
             if(!pause) {
